@@ -1,0 +1,6 @@
+c:\users\vanya\documents\visual studio 2015\Projects\Cube Attack(bachalor_work)\Cube Attack(bachalor_work)\bin\Debug\Cube Attack(bachalor_work).exe.config
+C:\Users\Vanya\documents\visual studio 2015\Projects\Cube Attack(bachalor_work)\Cube Attack(bachalor_work)\bin\Debug\Cube Attack(bachalor_work).exe
+C:\Users\Vanya\documents\visual studio 2015\Projects\Cube Attack(bachalor_work)\Cube Attack(bachalor_work)\bin\Debug\Cube Attack(bachalor_work).pdb
+C:\Users\Vanya\documents\visual studio 2015\Projects\Cube Attack(bachalor_work)\Cube Attack(bachalor_work)\obj\Debug\Cube Attack(bachalor_work).csprojResolveAssemblyReference.cache
+C:\Users\Vanya\documents\visual studio 2015\Projects\Cube Attack(bachalor_work)\Cube Attack(bachalor_work)\obj\Debug\Cube Attack(bachalor_work).exe
+C:\Users\Vanya\documents\visual studio 2015\Projects\Cube Attack(bachalor_work)\Cube Attack(bachalor_work)\obj\Debug\Cube Attack(bachalor_work).pdb
