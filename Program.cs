@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace CubeAttack
@@ -260,47 +262,59 @@ namespace CubeAttack
 
             int maxCubeSize = NumPublicVar;
             double numOfSubsets = Math.Pow(2, 3);
-            int lci_size = 1;
+            int lci_size = 1;                      
 
-            // iterate through all the cubes
-            for (int i = 1; i < numOfSubsets; i++)
+            using (StreamWriter sw = new StreamWriter(Param.Path.PathToTheFolderResult + "preprocessingPhaseResult" + ".txt", false, Encoding.Default))
             {
-                // cube formation
-                listCubeIndexes.Add(new List<int>());
-                for (int j = maxCubeSize; j > -1; j--)  // to adding into list in right order(for beauty). But not necessarily, and may be in preorder.
+                while (lci_size < maxCubeSize+1)   // find lci_size'th cube
                 {
-                    if (((i >> (j - 1)) & 1) == 1)      // getting the j-th bit of i (right to left).
+                    // iterate through all the cubes
+                    for (int i = 1; i < numOfSubsets; i++)
                     {
-                        listCubeIndexes[lci_size - 1].Add(maxCubeSize - j);    // believe that indexing cubes from left to right.
-                    }
-                }
-
-                var superpoly = new List<int>();
-                if (linearity_test(new int[NumPublicVar], listCubeIndexes[lci_size - 1]))
-                {
-                    superpoly = ComputeSuperpoly(new int[NumPublicVar], listCubeIndexes[lci_size - 1]);
-
-                    if ((!(superpoly.SequenceEqual(nulSeq))) && (!InMatrix(superpoly, superpolyMatrix)))
-                    {
-                        superpolyMatrix = superpolyMatrix.AddRow(superpoly);
-                        if (!IsLinearIndependent(superpolyMatrix))
+                        // cube formation
+                        listCubeIndexes.Add(new List<int>());
+                     
+                        for (int j = maxCubeSize; j > -1; j--)  // to adding into list in right order(for beauty). But not necessarily, and may be in preorder.
                         {
-                            superpolyMatrix = superpolyMatrix.DeleteLastRow();
+                            if (((i >> (j - 1)) & 1) == 1)      // getting the j-th bit of i (right to left).
+                            {
+                                listCubeIndexes[lci_size - 1].Add(maxCubeSize - j);    // believe that indexing cubes from left to right.
+                            }
+                        }
+
+                        var superpoly = new List<int>();
+                        if (linearity_test(new int[NumPublicVar], listCubeIndexes[lci_size - 1]))
+                        {
+                            superpoly = ComputeSuperpoly(new int[NumPublicVar], listCubeIndexes[lci_size - 1]);
+
+                            if ((!(superpoly.SequenceEqual(nulSeq))) && (!InMatrix(superpoly, superpolyMatrix)))
+                            {
+                                superpolyMatrix = superpolyMatrix.AddRow(superpoly);
+                                if (!IsLinearIndependent(superpolyMatrix))
+                                {
+                                    superpolyMatrix = superpolyMatrix.DeleteLastRow();
+                                    listCubeIndexes.RemoveAt(lci_size - 1);
+                                    continue;
+                                }
+
+                                Console.WriteLine(GetLogMessage(listCubeIndexes[lci_size - 1], superpoly));
+                                sw.WriteLine(GetLogMessage(listCubeIndexes[lci_size - 1], superpoly));
+
+                                lci_size++;
+                                continue;
+                            }
                             listCubeIndexes.RemoveAt(lci_size - 1);
                             continue;
                         }
-                        Console.WriteLine(GetLogMessage(listCubeIndexes[lci_size - 1], superpoly));
-
-                        lci_size++;
+                        listCubeIndexes.RemoveAt(lci_size - 1);
                         continue;
                     }
-                    listCubeIndexes.RemoveAt(lci_size - 1);
-                    continue;
                 }
-                listCubeIndexes.RemoveAt(lci_size - 1);
-                continue;
+
+                sw.Close();
             }
 
+            Operation.Serialize_W.serialize_w(superpolyMatrix, "superpolyMatrix");
         }
 
         /// <summary>
@@ -308,6 +322,7 @@ namespace CubeAttack
         /// </summary>
         static public void OnlinePhase()
         {
+
         }
 
         /// <summary>
@@ -334,6 +349,7 @@ namespace CubeAttack
         private static void Main(string[] args)
         {
             ProcessCubeAttack(CubeAttackMode.preprocessing);
+            
             Console.ReadLine();
         }
     }
