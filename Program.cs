@@ -1,40 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Matrix;
-using Vector;
 
 namespace CubeAttack
 {
-    class Program
+    internal class Program
     {
         static private string outputKeyBits;
         static private int[] key = { 0, 1, 1 };
 
         private enum CubeAttackMode { preprocessing, online, setPublicBits };
 
-        static public int NumLinearTest = 50; // number of testing function for linearity(BLR TEST)
+        static public int NumLinearTest = 10; // number of testing function for linearity(BLR TEST)
         static public int NumSecretParam = 3; // number of secret param(lenght of key in the cipher implemention)
-     
-        static public int PublicVar = 3;
-
-        static public int[] pubVarGlob = null;
-        public int indexOutputBit = 1;
+        static public int NumPublicVar = 3;
 
         static public Matrix.Matrix superpolyMatrix = null;
         static public List<List<int>> listCubeIndexes = null;
-     
+
         /// <summary>
         /// Master polynom represent such: f(v,x) = v_0*v_1*x_0 + v_0*v_1*x_1 + v_2*x_0*x_2 + v_1*x_2 + v_0*x_0 + v_0*v_1+
-        ///                                         +x_0*x_2 + v_1 + x_2+1 . 
+        ///                                         +x_0*x_2 + v_1 + x_2+1 .
         /// </summary>
         /// <param name="v">public input.</param>
         /// <param name="x">secret input.</param>
         /// <returns>Returns output bit, either 0 or 1.</returns>
-        static private int func(int []v, int[] x)
+        static private int func(int[] v, int[] x)
         {
-            return v[0]&v[1]&x[0] ^ v[0]&v[1]&x[1] ^ v[2]&x[0]&x[2] ^ v[1]&x[2] ^ 
-                   v[0]&x[0]      ^ v[0]&v[1]      ^ x[0]&x[2]      ^ v[1]      ^ x[2]  ^ 1;
+            return v[0] & v[1] & x[0] ^ v[0] & v[1] & x[1] ^ v[2] & x[0] & x[2] ^ v[1] & x[2] ^
+                   v[0] & x[0] ^ v[0] & v[1] ^ x[0] & x[2] ^ v[1] ^ x[2] ^ 1;
         }
 
         /// <summary>
@@ -43,9 +38,9 @@ namespace CubeAttack
         /// <param name="v">Public variables.</param>
         /// <param name="x">Secret variables.</param>
         /// <returns>Returns the black box output bit, either 0 or 1.</returns>
-        static public int black_box(int []v, int[]x)
-        { 
-            return func(v,x);
+        static public int black_box(int[] v, int[] x)
+        {
+            return func(v, x);
         }
 
         /// <summary>
@@ -61,32 +56,31 @@ namespace CubeAttack
             int[] xy = new int[NumSecretParam];
             int[] secVarElement = new int[NumSecretParam];
             int res = 0;
-            int f_0 = black_box(v, (int[])secVarElement.Clone());
 
-            for (int i=0; i < NumLinearTest; i++)
+            for (int i = 0; i < NumLinearTest; i++)
             {
                 for (int j = 0; j < NumSecretParam; j++)
                 {
-                    x[j] = rnd.Next(0,2);
+                    x[j] = rnd.Next(0, 2);
                     y[j] = rnd.Next(0, 2);
                     xy[j] = x[j] ^ y[j];
                 }
 
-                //Fix the public inputs not in the set of cube I to zero and for other 
-                // we put in all state(i.e in 2^(cube.size))
-                for (ulong k = 0; k < Math.Pow(2,maxterm.Count); k++)
+                //Fix the public inputs not in the set of cube I to zero and for other
+                //we put in all state(i.e in 2^(cube.size))
+                for (ulong k = 0; k < Math.Pow(2, maxterm.Count); k++)
                 {
                     for (int b = 0; b < maxterm.Count; b++)
                         v[maxterm[b]] = (k & ((ulong)1 << b)) > 0 ? 1 : 0;
-                    res += black_box(v, x) ^ black_box(v, y) ^ black_box(v, xy) ^ f_0;
+                    res ^= black_box(v, x) ^ black_box(v, y) ^ black_box(v, xy) ^ black_box(v, (int[])secVarElement.Clone());
                 }
 
-                if (res == 0) continue;
-                else return false;
+                if (res == 0) return true;
+                if (res == 1) return false;
             }
             return true;
         }
- 
+
         /// <summary>
         /// The function derives the algebraic structure of the superpoly from the maxterm.
         /// The structure is derived by computing the free term and the coefficients in the superpoly.
@@ -100,12 +94,11 @@ namespace CubeAttack
             int coeff = 0;
             List<int> superpoly = new List<int>();
             int[] secVarElement = new int[NumSecretParam];
-          
+
             // Compute the free term such:
             // sume over selected cube, and other variables into 0;
-            for(ulong i = 0; i < Math.Pow(2, maxterm.Count); i++)
+            for (ulong i = 0; i < Math.Pow(2, maxterm.Count); i++)
             {
-               
                 for (int j = 0; j < maxterm.Count; j++)
                     pubVarElement[maxterm[j]] = (i & ((ulong)1 << j)) > 0 ? 1 : 0;
                 constant ^= black_box((int[])pubVarElement.Clone(), (int[])secVarElement.Clone());
@@ -113,7 +106,7 @@ namespace CubeAttack
             superpoly.Add(constant);
 
             // Compute coefficients such:
-            // sume over selected cube inputing other variables into 0 + 
+            // sume over selected cube inputing other variables into 0 +
             // sume over selected cube with other variables into 0, except x_j place.
             for (int k = 0; k < NumSecretParam; k++)
             {
@@ -154,12 +147,12 @@ namespace CubeAttack
         /// <param name="superpoly"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        static string GetLogMessage(List<int> cubeIndexes, List<int> superpoly, int? value = null)
+        private static string GetLogMessage(List<int> cubeIndexes, List<int> superpoly, int? value = null)
         {
-            cubeIndexes.Sort();
+           // cubeIndexes.Sort();
 
             return "Superpoly: " + SuperpolyAsString(superpoly) + ((value != null) ? " = " + value : "") +
-                " \tCube indexes: {" + string.Join(",", cubeIndexes) + "}" + "\n";
+                   " \tCube indexes: {" + string.Join(",", cubeIndexes) + "}" + "\n";
         }
 
         /// <summary>
@@ -194,7 +187,6 @@ namespace CubeAttack
             }
             return false;
         }
-
 
         /// <summary>
         /// Test if an n x m matrix contains n linearly independent vectors.
@@ -243,7 +235,7 @@ namespace CubeAttack
                         a[maxind, k] = temp;
                     }
 
-                    // Gauss elimination 
+                    // Gauss elimination
                     for (int i = j + 1; i < A.Cols; i++)
                         for (int k = j + 1; k < A.Rows; k++)
                             a[i, k] = a[i, k] - (a[i, j] / a[j, j] * a[j, k]);
@@ -254,60 +246,95 @@ namespace CubeAttack
         }
 
         /// <summary>
-        /// Preprocessing phase of the cube attack. 
+        /// Preprocessing phase of the cube attack.
         /// </summary>
-        public void PreprocessingPhase()
+        static public void PreprocessingPhase()
         {
+            superpolyMatrix = new Matrix.Matrix(0, NumSecretParam + 1);
+            listCubeIndexes = new List<List<int>>();
+            var nulSeq = new List<int>();
+            for (int i = 0; i < NumPublicVar + 1; i++)
+            {
+                nulSeq.Add(0);
+            }
+
+            int maxCubeSize = NumPublicVar;
+            double numOfSubsets = Math.Pow(2, 3);
+            int lci_size = 1;
+
+            // iterate through all the cubes
+            for (int i = 1; i < numOfSubsets; i++)
+            {
+                // cube formation
+                listCubeIndexes.Add(new List<int>());
+                for (int j = maxCubeSize; j > -1; j--)  // to adding into list in right order(for beauty). But not necessarily, and may be in preorder.
+                {
+                    if (((i >> (j - 1)) & 1) == 1)      // getting the j-th bit of i (right to left).
+                    {
+                        listCubeIndexes[lci_size - 1].Add(maxCubeSize - j);    // believe that indexing cubes from left to right.
+                    }
+                }
+
+                var superpoly = new List<int>();
+                if (linearity_test(new int[NumPublicVar], listCubeIndexes[lci_size - 1]))
+                {
+                    superpoly = ComputeSuperpoly(new int[NumPublicVar], listCubeIndexes[lci_size - 1]);
+
+                    if ((!(superpoly.SequenceEqual(nulSeq))) && (!InMatrix(superpoly, superpolyMatrix)))
+                    {
+                        superpolyMatrix = superpolyMatrix.AddRow(superpoly);
+                        if (!IsLinearIndependent(superpolyMatrix))
+                        {
+                            superpolyMatrix = superpolyMatrix.DeleteLastRow();
+                            listCubeIndexes.RemoveAt(lci_size - 1);
+                            continue;
+                        }
+                        Console.WriteLine(GetLogMessage(listCubeIndexes[lci_size - 1], superpoly));
+
+                        lci_size++;
+                        continue;
+                    }
+                    listCubeIndexes.RemoveAt(lci_size - 1);
+                    continue;
+                }
+                listCubeIndexes.RemoveAt(lci_size - 1);
+                continue;
+            }
 
         }
 
         /// <summary>
         /// Online phase of the cube attack.
         /// </summary>
-        public void OnlinePhase()
+        static public void OnlinePhase()
         {
-
         }
 
         /// <summary>
         /// Does the actual CubeAttack processing
         /// </summary>
-        private void ProcessCubeAttack(CubeAttackMode mode)
+        static private void ProcessCubeAttack(CubeAttackMode mode)
         {
             switch (mode)
             {
                 case CubeAttackMode.preprocessing:
-                  //  PreprocessingPhase();
+                     PreprocessingPhase();
                     break;
+
                 case CubeAttackMode.online:
-                   // OnlinePhase();
+                    // OnlinePhase();
                     break;
+
                 case CubeAttackMode.setPublicBits:
-                  //  SetPublicBitsPhase();
+                    //  SetPublicBitsPhase();
                     break;
             }
         }
 
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            int[] maxterm = {2};
-            int[] comp = new int[3];
-            for (ulong i = 0; i < Math.Pow(2, maxterm.Length); i++)
-            {
-                for (int j = 0; j < maxterm.Length; j++)
-                {
-                    comp[maxterm[j]] = (i & ((ulong)1 << j)) > 0 ? 1 : 0;
-                  
-                }
-                for (int k = 0; k < 3; k++)
-                {
-
-                    Console.WriteLine(comp[k]);
-                }
-                Console.WriteLine('\n');
-            }
-                Console.ReadLine();
+            ProcessCubeAttack(CubeAttackMode.preprocessing);
+            Console.ReadLine();
         }
     }
 }

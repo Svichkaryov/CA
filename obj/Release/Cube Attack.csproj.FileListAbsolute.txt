@@ -1,0 +1,5 @@
+C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\bin\Release\Cube Attack(bachalor_work).exe.config
+C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\obj\Release\Cube Attack(bachalor_work).exe
+C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\obj\Release\Cube Attack(bachalor_work).pdb
+C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\bin\Release\Cube Attack(bachalor_work).exe
+C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\bin\Release\Cube Attack(bachalor_work).pdb
