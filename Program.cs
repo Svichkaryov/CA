@@ -262,19 +262,19 @@ namespace CubeAttack
 
             int maxCubeSize = NumPublicVar;
             double numOfSubsets = Math.Pow(2, 3);
-            int lci_size = 1;                      
+            int lci_size = 1;
 
             using (StreamWriter sw = new StreamWriter(Param.Path.PathToTheFolderResult + "preprocessingPhaseResult" + ".txt", false, Encoding.Default))
             {
-                while (lci_size < maxCubeSize+1)   // find lci_size'th cube
+                while (lci_size < maxCubeSize + 1)   // find lci_size'th cube
                 {
                     // iterate through all the cubes
                     for (int i = 1; i < numOfSubsets; i++)
                     {
                         // cube formation
                         listCubeIndexes.Add(new List<int>());
-                     
-                        for (int j = maxCubeSize; j > -1; j--)  // to adding into list in right order(for beauty). But not necessarily, and may be in preorder.
+
+                        for (int j = maxCubeSize; j > -1; j--)  // to adding into list in right order(for beauty).(But not necessarily).
                         {
                             if (((i >> (j - 1)) & 1) == 1)      // getting the j-th bit of i (right to left).
                             {
@@ -309,12 +309,13 @@ namespace CubeAttack
                         listCubeIndexes.RemoveAt(lci_size - 1);
                         continue;
                     }
-                }
 
+                }
                 sw.Close();
             }
 
             Operation.Serialize_W.serialize_w(superpolyMatrix, "superpolyMatrix");
+            Operation.Serialize_W.serialize_w(listCubeIndexes, "cubeIndexes");
         }
 
         /// <summary>
@@ -349,7 +350,6 @@ namespace CubeAttack
         private static void Main(string[] args)
         {
             ProcessCubeAttack(CubeAttackMode.preprocessing);
-            
             Console.ReadLine();
         }
     }

@@ -14,7 +14,7 @@ namespace Operation
         /// </summary>
         /// <param name="superpolyMatrix">object that is serialized.</param>
         /// <param name="nameSerializeObj">Save obj into this* file.</param>
-        static public void serialize_w(Matrix.Matrix superpolyMatrix, string nameSerializeObj)
+        static public void serialize_w(object superpolyMatrix, string nameSerializeObj)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameSerializeObj + ".dat", FileMode.OpenOrCreate))
@@ -29,7 +29,7 @@ namespace Operation
         /// </summary>
         /// <param name="nameDeserializeObj">object is read from this* file.</param>
         /// <returns>desired object from a file.</returns>
-        static public Matrix.Matrix deserialize_w(string nameDeserializeObj)
+        static public Matrix.Matrix deserialize_w_mm(string nameDeserializeObj)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             Matrix.Matrix superpolyMatrix = null;
@@ -37,15 +37,28 @@ namespace Operation
             using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameDeserializeObj + ".dat", FileMode.OpenOrCreate))
             {
                 superpolyMatrix = (Matrix.Matrix)formatter.Deserialize(fs);
-                Console.WriteLine("The object deserialized");
+                Console.WriteLine("The Matrix {0} deserialized",nameDeserializeObj);
             }
             return superpolyMatrix;
+        }
+        
+        static public List<List<int>> deserialize_w_ll(string nameDeserializeObj)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            List<List<int>> listCubeIndexes = null;
+
+            using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameDeserializeObj + ".dat", FileMode.OpenOrCreate))
+            {
+                listCubeIndexes = (List<List<int>>)formatter.Deserialize(fs);
+                Console.WriteLine("The List<List<int>> {0} deserialized",nameDeserializeObj);
+            }
+            return listCubeIndexes;
         }
 
     }
 
     /// My stream reader 
-    class SReader
+    class IO
     {
         /// <summary>
         /// Function to create List<List<int>> (AmmountOfCube x maxLenghtCube).
