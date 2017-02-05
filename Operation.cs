@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 
 namespace Operation
 {
@@ -20,7 +19,7 @@ namespace Operation
             using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameSerializeObj + ".dat", FileMode.OpenOrCreate))
             {
                 formatter.Serialize(fs, superpolyMatrix);
-                Console.WriteLine("The object is serialized");
+                Console.WriteLine("The object is serialized.\n");
             }
         }
 
@@ -37,7 +36,7 @@ namespace Operation
             using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameDeserializeObj + ".dat", FileMode.OpenOrCreate))
             {
                 superpolyMatrix = (Matrix.Matrix)formatter.Deserialize(fs);
-                Console.WriteLine("The Matrix {0} deserialized",nameDeserializeObj);
+                Console.WriteLine("The Matrix {0} deserialized.\n",nameDeserializeObj);
             }
             return superpolyMatrix;
         }
@@ -50,7 +49,7 @@ namespace Operation
             using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameDeserializeObj + ".dat", FileMode.OpenOrCreate))
             {
                 listCubeIndexes = (List<List<int>>)formatter.Deserialize(fs);
-                Console.WriteLine("The List<List<int>> {0} deserialized",nameDeserializeObj);
+                Console.WriteLine("The List<List<int>> {0} deserialized.",nameDeserializeObj);
             }
             return listCubeIndexes;
         }

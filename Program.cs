@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace CubeAttack
@@ -10,9 +9,9 @@ namespace CubeAttack
     internal class Program
     {
         static private string outputKeyBits;
-        static private int[] key = { 0, 1, 1 };
+        static private int[] key = { 1, 0, 1};
 
-        private enum CubeAttackMode { preprocessing, online, setPublicBits };
+        private enum CubeAttackMode { preprocessing, online};
 
         static public int NumLinearTest = 10; // number of testing function for linearity(BLR TEST)
         static public int NumSecretParam = 3; // number of secret param(lenght of key in the cipher implemention)
@@ -20,6 +19,7 @@ namespace CubeAttack
 
         static public Matrix.Matrix superpolyMatrix = null;
         static public List<List<int>> listCubeIndexes = null;
+        static public Vector.Vector outputBits = null;           
 
         /// <summary>
         /// Master polynom represent such: f(v,x) = v_0*v_1*x_0 + v_0*v_1*x_1 + v_2*x_0*x_2 + v_1*x_2 + v_0*x_0 + v_0*v_1+
@@ -161,12 +161,13 @@ namespace CubeAttack
         /// The function outputs the key bits.
         /// </summary>
         /// <param name="res">Result vector</param>
-        static public void OutputKey(Vector.Vector res)
+        static public string OutputKey(Vector.Vector res)
         {
             StringBuilder output = new StringBuilder(string.Empty);
             for (int i = 0; i < res.Length; i++)
                 output.AppendLine("x" + i + " = " + res[i]);
             outputKeyBits = output.ToString();
+            return outputKeyBits;
         }
 
         /// <summary>
@@ -323,7 +324,33 @@ namespace CubeAttack
         /// </summary>
         static public void OnlinePhase()
         {
+            outputBits = new Vector.Vector(NumSecretParam);
+            var superpolyMatrixWithoutConst = new Matrix.Matrix(NumSecretParam, NumSecretParam);
+            int[] pubVarElement = new int[NumPublicVar];
 
+            if (listCubeIndexes==null & superpolyMatrix == null)
+            {
+                listCubeIndexes = Operation.Serialize_W.deserialize_w_ll("cubeIndexes");
+                superpolyMatrix = Operation.Serialize_W.deserialize_w_mm("superpolyMatrix");
+            }
+
+            superpolyMatrixWithoutConst = superpolyMatrix.DeleteFirstColumn();
+
+            for (int i = 0; i < listCubeIndexes.Count(); i++)
+            {
+                for (ulong j = 0; j < Math.Pow(2, listCubeIndexes[i].Count); j++)
+                {
+                    for (int k = 0; k < listCubeIndexes[i].Count; k++)
+                        pubVarElement[listCubeIndexes[i][k]] = (j & ((ulong)1 << k)) > 0 ? 1 : 0;
+                    outputBits[i] ^= black_box(pubVarElement, key);
+                }
+                outputBits[i] ^= superpolyMatrix[i,0];
+            }
+
+            var _key = new Vector.Vector(NumSecretParam);
+            _key = superpolyMatrixWithoutConst.Inverse() * outputBits;
+
+            Console.WriteLine(OutputKey(_key));
         }
 
         /// <summary>
@@ -334,22 +361,29 @@ namespace CubeAttack
             switch (mode)
             {
                 case CubeAttackMode.preprocessing:
-                     PreprocessingPhase();
+                    PreprocessingPhase();
                     break;
 
                 case CubeAttackMode.online:
-                    // OnlinePhase();
-                    break;
-
-                case CubeAttackMode.setPublicBits:
-                    //  SetPublicBitsPhase();
+                    OnlinePhase();
                     break;
             }
         }
 
-        private static void Main(string[] args)
+        static public void Preprocessing()
         {
             ProcessCubeAttack(CubeAttackMode.preprocessing);
+        }
+
+        static public void Online()
+        {
+            ProcessCubeAttack(CubeAttackMode.online);
+        }
+
+        private static void Main(string[] args)
+        {
+            Preprocessing();
+            Online();
             Console.ReadLine();
         }
     }
