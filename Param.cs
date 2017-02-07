@@ -1,11 +1,11 @@
 ﻿namespace Param
 {
-    class Const
+    public class Const
     {
 
     }
 
-    class Path
+    public class Path
     {
         public const string PathToTheFolderResult = @"C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\result\";
     }

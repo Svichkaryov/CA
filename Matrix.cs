@@ -172,7 +172,9 @@ namespace Matrix
         /// includes binary operator /
         /// </summary>
         public static Matrix operator /(Matrix matrix, int iNo)
-        { return Matrix.Multiply(matrix, iNo); }
+        {
+            return Matrix.Multiply(matrix, iNo);
+        }
 
         /// <summary>
         /// Internal function for the above operator
