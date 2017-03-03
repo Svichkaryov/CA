@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace CubeAttack
@@ -382,9 +384,16 @@ namespace CubeAttack
 
         private static void Main(string[] args)
         {
-            Preprocessing();
-            Online();
-            Console.ReadLine();
+            // Preprocessing();
+            // Online();
+            BigInteger key = Operation.BigInteger_W.ToHex("FFFFFFFFFFFFFFFFFFFF");
+            BigInteger cipher = Operation.BigInteger_W.ToHex("3333DCD3213210D2");
+
+            Present A = new Present(key);
+            Console.WriteLine(A.Encrypt(0).ToString("X"));
+         
+            Console.ReadLine(); 
         }
+
     }
 }

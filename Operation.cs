@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Operation
@@ -36,11 +38,11 @@ namespace Operation
             using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameDeserializeObj + ".dat", FileMode.OpenOrCreate))
             {
                 superpolyMatrix = (Matrix.Matrix)formatter.Deserialize(fs);
-                Console.WriteLine("The Matrix {0} deserialized.\n",nameDeserializeObj);
+                Console.WriteLine("The Matrix {0} deserialized.\n", nameDeserializeObj);
             }
             return superpolyMatrix;
         }
-        
+
         static public List<List<int>> deserialize_w_ll(string nameDeserializeObj)
         {
             BinaryFormatter formatter = new BinaryFormatter();
@@ -49,7 +51,7 @@ namespace Operation
             using (FileStream fs = new FileStream(Param.Path.PathToTheFolderResult + nameDeserializeObj + ".dat", FileMode.OpenOrCreate))
             {
                 listCubeIndexes = (List<List<int>>)formatter.Deserialize(fs);
-                Console.WriteLine("The List<List<int>> {0} deserialized.",nameDeserializeObj);
+                Console.WriteLine("The List<List<int>> {0} deserialized.", nameDeserializeObj);
             }
             return listCubeIndexes;
         }
@@ -65,7 +67,7 @@ namespace Operation
         /// <param name="fileName">reading from this* file.</param>
         /// <param name="maxCubeSize">Maximum lenght of cube.</param>
         /// <returns>List of Cube indexes </returns>
-        static public List<List<int>> readerFormFile(string fileName,int maxCubeSize)
+        static public List<List<int>> readerFormFile(string fileName, int maxCubeSize)
         {
             List<List<int>> TlistCubeIndexes = new List<List<int>>();
 
@@ -91,4 +93,17 @@ namespace Operation
         }
     }
 
+    class BigInteger_W
+    {
+        /// <summary>
+        /// Convert decimal value into hex.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        static public BigInteger ToHex(string value)
+        {
+            BigInteger output = BigInteger.Parse("00" + value, NumberStyles.AllowHexSpecifier);
+            return output;
+        }
+    }
 }
