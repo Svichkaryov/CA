@@ -33,14 +33,18 @@ public class Present : ICipher
 
     public Present(BigInteger key, int rounds) 
     {
-		this.rounds = rounds;
-		// check key
-		if (BitCount(key) > 128) {
+        this.rounds = rounds;
+
+        if (BitCount(key) > 128)
+        {
             throw new Exception("Key too big. It has to be either 80 or 128 bit long.");
         }
-		if (BitCount(key) > 80) {
+		if (BitCount(key) > 80)
+        {
             roundKeys = GenerateRoundkeys128(key, rounds);
-        } else {
+        }
+        else
+        {
             roundKeys = GenerateRoundkeys80(key, rounds);
         }
     }

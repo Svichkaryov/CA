@@ -10,3 +10,4 @@ C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\obj
 C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\bin\Debug\Cube Attack(bachalor_work).exe
 C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\bin\Debug\Cube Attack(bachalor_work).pdb
 C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\obj\Debug\Cube Attack.csprojResolveAssemblyReference.cache
+C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\bin\Debug\Cube_Attack.XML

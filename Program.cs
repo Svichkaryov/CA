@@ -15,7 +15,7 @@ namespace CubeAttack
 
         private enum CubeAttackMode { preprocessing, online};
 
-        static public int NumLinearTest = 10; // number of testing function for linearity(BLR TEST)
+        static public int NumLinearTest = 100; // number of testing function for linearity(BLR TEST)
         static public int NumSecretParam = 3; // number of secret param(lenght of key in the cipher implemention)
         static public int NumPublicVar = 3;
 
@@ -24,16 +24,15 @@ namespace CubeAttack
         static public Vector.Vector outputBits = null;           
 
         /// <summary>
-        /// Master polynom represent such: f(v,x) = v_0*v_1*x_0 + v_0*v_1*x_1 + v_2*x_0*x_2 + v_1*x_2 + v_0*x_0 + v_0*v_1+
-        ///                                         +x_0*x_2 + v_1 + x_2+1 .
+        /// Master polynom represent such: f(v,x) = ....
         /// </summary>
         /// <param name="v">public input.</param>
         /// <param name="x">secret input.</param>
         /// <returns>Returns output bit, either 0 or 1.</returns>
         static private int func(int[] v, int[] x)
         {
-            return v[0] & v[1] & x[0] ^ v[0] & v[1] & x[1] ^ v[2] & x[0] & x[2] ^ v[1] & x[2] ^
-                   v[0] & x[0] ^ v[0] & v[1] ^ x[0] & x[2] ^ v[1] ^ x[2] ^ 1;
+            return (v[0] & v[1] & x[0]) ^ (v[0] & v[1] & x[2]) ^(v[1] & x[2]) ^ (v[1] & x[1]) ^ v[0] & x[0] ^
+                   v[0] & v[1] ^ (v[2] & x[1] & x[0]) ^ v[1] ^ x[1] ^ 1;
         }
 
         /// <summary>
@@ -77,6 +76,46 @@ namespace CubeAttack
                     for (int b = 0; b < maxterm.Count; b++)
                         v[maxterm[b]] = (k & ((ulong)1 << b)) > 0 ? 1 : 0;
                     res ^= black_box(v, x) ^ black_box(v, y) ^ black_box(v, xy) ^ black_box(v, (int[])secVarElement.Clone());
+                }
+
+                if (res == 0) return true;
+                if (res == 1) return false;
+            }
+            return true;
+        }
+
+        static public bool quadratic_test(int[] v, List<int> maxterm)
+        {
+            Random rnd = new Random();
+            int[] x = new int[NumSecretParam];
+            int[] y = new int[NumSecretParam];
+            int[] z = new int[NumSecretParam];
+            int[] xy = new int[NumSecretParam];
+            int[] xz = new int[NumSecretParam];
+            int[] zy = new int[NumSecretParam];
+            int[] secVarElement = new int[NumSecretParam];
+            int res = 0;
+
+            for (int i = 0; i < NumLinearTest; i++)
+            {
+                for (int j = 0; j < NumSecretParam; j++)
+                {
+                    x[j] = rnd.Next(0, 2);
+                    y[j] = rnd.Next(0, 2);
+                    z[j] = rnd.Next(0, 2);
+                    xy[j] = x[j] ^ y[j];
+                    xz[j] = x[j] ^ z[j];
+                    zy[j] = z[j] ^ y[j];
+                }
+
+                //Fix the public inputs not in the set of cube I to zero and for other
+                //we put in all state(i.e in 2^(cube.size))
+                for (ulong k = 0; k < Math.Pow(2, maxterm.Count); k++)
+                {
+                    for (int b = 0; b < maxterm.Count; b++)
+                        v[maxterm[b]] = (k & ((ulong)1 << b)) > 0 ? 1 : 0;
+                    res ^= black_box(v, x) ^ black_box(v, y) ^ black_box(v, z) ^ black_box(v, xy)
+                         ^ black_box(v, xz) ^ black_box(v, zy) ^ black_box(v, (int[])secVarElement.Clone());
                 }
 
                 if (res == 0) return true;
@@ -130,7 +169,152 @@ namespace CubeAttack
         }
 
         /// <summary>
-        /// Represent superpoly in the string style : consts + x_j , j=1,...,n.
+        /// Compute indexes of secret variables in superpoly(deg=2)
+        /// </summary>
+        /// <param name="pubVarElement"></param>
+        /// <param name="maxterm">list of indexes(I)</param>
+        /// <returns>indexes of secret variables</returns>
+        public static List<int> SecretVariableIndexes(int[] pubVarElement, List<int> maxterm)
+        {
+            Random rnd = new Random();
+            int[] y    = new int[NumSecretParam];
+            int[] y0   = new int[NumSecretParam];
+            int[] y1   = new int[NumSecretParam];
+            int res    = 0;
+            int NumOfRandomSample = 5;
+            List<int> LSecretVariableIndexes = new List<int>();
+
+            for (int i = 0; i < NumSecretParam; i++)
+            {
+                for (int k = 0; k < NumOfRandomSample; k++)
+                {
+                    for (int j = 0; j < NumSecretParam; j++)
+                    {
+                        y[j] = rnd.Next(0, 2);
+                        y0[j] = y[j];
+                        y1[j] = y[j];
+                    }
+                    y0[i] = 0;
+                    y1[i] = 1;
+
+                    for (ulong l = 0; l < Math.Pow(2, maxterm.Count); l++)
+                    {
+                        for (int b = 0; b < maxterm.Count; b++)
+                            pubVarElement[maxterm[b]] = (l & ((ulong)1 << b)) > 0 ? 1 : 0;
+                        res ^= black_box(pubVarElement, y0) ^ black_box(pubVarElement, y1);
+                    }
+
+                    if (res == 1)
+                    {
+                        LSecretVariableIndexes.Add(i);
+                        res = 0;
+                        break;
+                    }
+                }
+            }
+
+
+            for (int i = 0; i < NumPublicVar; i++)
+                pubVarElement[i] = 0;
+
+            return LSecretVariableIndexes;
+        }
+
+        /// <summary>
+        /// Compute term of superpoly(deg=2)
+        /// </summary>
+        /// <param name="v">public variables</param>
+        /// <param name="SVI">Secret variable indexes</param>
+        /// <returns>List of term</returns>
+        public static List<List<int>> ComputeSuperpoly2(int[] v, List<int> SVI, List<int> I)
+        {
+            var ListOfTerm = new List<List<int>>();
+            ListOfTerm.Add(new List<int>());
+            ListOfTerm.Add(new List<int>());
+            int[] secVarElement = new int[NumSecretParam];
+            int res = 0;
+
+            // for K -- 1-demension (amount = binom_coeff(1,SVI.Count()))
+            for (int r1 = 0; r1 < SVI.Count(); r1++)
+            {
+                int[] yr0 = new int[NumSecretParam];
+                int[] yr1 = new int[NumSecretParam];
+                for (int j = 0; j < NumSecretParam; j++)
+                {
+                    yr0[j] = 0;
+                    yr1[j] = 0;
+                } 
+                yr0[r1] = 0;
+                yr1[r1] = 1;
+
+
+                for (ulong l = 0; l < Math.Pow(2, I.Count); l++)
+                {
+                    for (int b = 0; b < I.Count; b++)
+                        v[I[b]] = (l & ((ulong)1 << b)) > 0 ? 1 : 0;
+                    res ^= black_box(v, yr0) ^ black_box(v, yr1);
+                }
+
+                if (res == 1)
+                {
+                    ListOfTerm[0].Add(r1);
+                    ListOfTerm[1].Add(0);
+                    res = 0;
+                }
+            }
+
+            // for K -- 2-demension (amount = binom_coeff(2,SVI.Count()))
+            for (int r2_1 = 0; r2_1 < SVI.Count(); r2_1++)
+            {
+                for (int r2_2 = r2_1 + 1; r2_2 < SVI.Count; r2_2++)
+                {
+                    int[] yr00 = new int[NumSecretParam];
+                    int[] yr01 = new int[NumSecretParam];
+                    int[] yr10 = new int[NumSecretParam];
+                    int[] yr11 = new int[NumSecretParam];
+                    yr01[r2_2] = 1;
+                    yr10[r2_1] = 1;
+                    yr11[r2_1] = 1;
+                    yr11[r2_2] = 1;
+
+                    for (ulong l = 0; l < Math.Pow(2, I.Count); l++)
+                    {
+                        for (int b = 0; b < I.Count; b++)
+                            v[I[b]] = (l & ((ulong)1 << b)) > 0 ? 1 : 0;
+                        res ^= black_box(v, yr00) ^ black_box(v, yr01) 
+                             ^ black_box(v, yr10) ^ black_box(v, yr11);
+                    }
+
+                    if (res == 1)
+                    {
+                        ListOfTerm[0].Add(r2_1);
+                        ListOfTerm[1].Add(r2_2);
+                        res = 0;
+                    }
+                }
+            }
+
+            //Compute constant
+            for (ulong l = 0; l < Math.Pow(2, I.Count); l++)
+            {
+                for (int b = 0; b < I.Count; b++)
+                    v[I[b]] = (l & ((ulong)1 << b)) > 0 ? 1 : 0;
+                res ^= black_box(v, (int[])secVarElement.Clone());
+            }
+
+            if (res == 1)
+            {
+                ListOfTerm[0].Add(res);
+                ListOfTerm[1].Add(0);
+                res = 0;
+            }
+            
+            return ListOfTerm;
+        }
+
+
+        /// <summary>
+        /// Represent superpoly(deg=1) in the string style : consts + x_j , j=1,...,n.
         /// </summary>
         /// <param name="superpoly">Superpoly represent by list of index</param>
         /// <returns>Superpoly in string format</returns>
@@ -143,6 +327,24 @@ namespace CubeAttack
 
             return (sp.Count == 0) ? "0" : string.Join("+", sp);
         }
+
+        /// <summary>
+        /// Represent superpoly(deg=2) in the string
+        /// </summary>
+        /// <param name="superpoly2"></param>
+        /// <returns></returns>
+        static public string Superpoly2AsString(List<List<int>> superpoly2)
+        {
+            List<string> sp = new List<string>();
+
+            for (int i = 0; i < superpoly2[0].Count(); i++)
+            {
+                if (superpoly2[0][i] == 1 & superpoly2[1][i] == 0) sp.Add(i == superpoly2[0].Count() ? "1" : "x" + superpoly2[0][i]);
+                if (superpoly2[1][i] == 1) sp.Add(i == superpoly2[0].Count() ? "1" : "x" + superpoly2[0][i] + "*x" + superpoly2[1][i]);
+            }
+            return (sp.Count == 0) ? "0" : string.Join("+", sp);
+        }
+
 
         /// <summary>
         /// Information.
@@ -321,6 +523,7 @@ namespace CubeAttack
             Operation.Serialize_W.serialize_w(listCubeIndexes, "cubeIndexes");
         }
 
+
         /// <summary>
         /// Online phase of the cube attack.
         /// </summary>
@@ -384,14 +587,22 @@ namespace CubeAttack
 
         private static void Main(string[] args)
         {
-            // Preprocessing();
-            // Online();
-            BigInteger key = Operation.BigInteger_W.ToHex("FFFFFFFFFFFFFFFFFFFF");
-            BigInteger cipher = Operation.BigInteger_W.ToHex("3333DCD3213210D2");
+            Preprocessing();
+            //Online();
+            var A = new List<int>() { 2 };
+            var v = new int[] { 0, 0, 0 };
+            var v1 = new int[] { 0, 0, 0 };
+            var pubVarElement = new int[] { 0, 0, 0 };
 
-            Present A = new Present(key);
-            Console.WriteLine(A.Encrypt(0).ToString("X"));
-         
+            ComputeSuperpoly2(v, SecretVariableIndexes(v, A),A);
+            Console.WriteLine(Superpoly2AsString(ComputeSuperpoly2(v, SecretVariableIndexes(v, A), A)));
+   
+            //BigInteger key = Operation.BigInteger_W.ToHex("FFFFFFFFFFFFFFFFFFFF");
+            //BigInteger cipher = Operation.BigInteger_W.ToHex("3333DCD3213210D2");
+
+            //Present A = new Present(key);
+            //Console.WriteLine(A.Encrypt(0).ToString("X"));
+
             Console.ReadLine(); 
         }
 
