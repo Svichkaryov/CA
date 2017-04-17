@@ -187,15 +187,6 @@
             <param name="superpoly2"></param>
             <returns></returns>
         </member>
-        <member name="M:CubeAttack.Program.GetLogMessage(System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Nullable{System.Int32})">
-            <summary>
-            Information.
-            </summary>
-            <param name="cubeIndexes"></param>
-            <param name="superpoly"></param>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
         <member name="M:CubeAttack.Program.OutputKey(Vector.Vector)">
             <summary>
             The function outputs the key bits.
