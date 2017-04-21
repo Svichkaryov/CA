@@ -218,6 +218,11 @@
             Online phase of the cube attack.
             </summary>
         </member>
+        <member name="M:CubeAttack.Program.SetPublicBitsPhase">
+            <summary>
+            User-Mode to set public bit values manually.
+            </summary>
+        </member>
         <member name="M:CubeAttack.Program.ProcessCubeAttack(CubeAttack.Program.CubeAttackMode)">
             <summary>
             Does the actual CubeAttack processing

@@ -1,8 +1,0 @@
-Superpoly: x0*x1 	Cube indexes: {2}
-
-Superpoly: 0 	Cube indexes: {1,2}
-
-Superpoly: 0 	Cube indexes: {0,2}
-
-Superpoly: 0 	Cube indexes: {0,1,2}
-

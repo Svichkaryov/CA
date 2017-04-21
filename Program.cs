@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace CubeAttack
         static private string outputKeyBits;
         static private int[] key = { 1, 0, 1};
 
-        private enum CubeAttackMode { preprocessing, online};
+        private enum CubeAttackMode { preprocessing, online, setPublicBits};
 
         static public int NumLinearTest = 100; // number of testing function for linearity(BLR TEST)
         static public int NumQuadraticTest = 100; // number of testing function for linearity(BLR TEST)
@@ -314,7 +315,6 @@ namespace CubeAttack
             return ListOfTerm;
         }
 
-
         /// <summary>
         /// Represent superpoly(deg=1) in the string style : consts + x_j , j=1,...,n.
         /// </summary>
@@ -346,7 +346,6 @@ namespace CubeAttack
             }
             return (sp.Count == 0) ? "0" : string.Join("+", sp);
         }
-
 
         private static string GetLogMessage1(List<int> cubeIndexes, List<int> superpoly, int? value = null)
         {
@@ -501,8 +500,7 @@ namespace CubeAttack
                             if (linearity_test(new int[NumPublicVar], listCubeIndexes1[lci1_size - 1]))
                             {
                                 superpoly = ComputeSuperpoly(new int[NumPublicVar], listCubeIndexes1[lci1_size - 1]);
-
-                                if ((!(superpoly.SequenceEqual(nulSeq))) && (!InMatrix(superpoly, superpolyMatrix)))
+                                if ((!(superpoly.SequenceEqual(nulSeq))) & (!InMatrix(superpoly, superpolyMatrix)))
                                 {
                                     superpolyMatrix = superpolyMatrix.AddRow(superpoly);
                                     if (!IsLinearIndependent(superpolyMatrix))
@@ -526,14 +524,16 @@ namespace CubeAttack
                                 {
                                     superpoly2 = ComputeSuperpoly2(new int[NumPublicVar], SecretVariableIndexes(new int[NumPublicVar], listCubeIndexes1[lci1_size - 1]),
                                                                    listCubeIndexes1[lci1_size - 1]);
+                                    if (superpoly2[1].Sum() != 0)
+                                    {
+                                        Console.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
+                                        sw2.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
 
-                                    Console.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
-                                    sw2.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
-
-                                    listCubeIndexes2.Add(new List<int>());
-                                    foreach (var el in listCubeIndexes1[lci1_size - 1])
-                                        listCubeIndexes2[lci2_size].Add(el);
-                                    lci2_size++;
+                                        listCubeIndexes2.Add(new List<int>());
+                                        foreach (var el in listCubeIndexes1[lci1_size - 1])
+                                            listCubeIndexes2[lci2_size].Add(el);
+                                        lci2_size++;
+                                    }
                                 }
 
                                 listCubeIndexes1.RemoveAt(lci1_size - 1);
@@ -545,14 +545,16 @@ namespace CubeAttack
                             {
                                 superpoly2 = ComputeSuperpoly2(new int[NumPublicVar], SecretVariableIndexes(new int[NumPublicVar], listCubeIndexes1[lci1_size - 1]),
                                                                listCubeIndexes1[lci1_size - 1]);
+                                if (superpoly2[1].Sum() != 0)
+                                {
+                                    Console.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
+                                    sw2.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
 
-                                Console.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
-                                sw2.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
-
-                                listCubeIndexes2.Add(new List<int>());
-                                foreach (var el in listCubeIndexes1[lci1_size - 1])
-                                    listCubeIndexes2[lci2_size].Add(el);
-                                lci2_size++;
+                                    listCubeIndexes2.Add(new List<int>());
+                                    foreach (var el in listCubeIndexes1[lci1_size - 1])
+                                        listCubeIndexes2[lci2_size].Add(el);
+                                    lci2_size++;
+                                }
                             }
                             
                             listCubeIndexes1.RemoveAt(lci1_size - 1);
@@ -603,6 +605,52 @@ namespace CubeAttack
             Console.WriteLine(OutputKey(_key));
         }
 
+
+        /// <summary>
+        /// User-Mode to set public bit values manually.
+        /// </summary>
+        static public void SetPublicBitsPhase()
+        {
+            var cube = new List<int>();
+            Console.WriteLine("Input index of cube separated by commas: ");
+            var cube_str = Console.ReadLine();
+
+            char separator = ',';
+            string[] items = cube_str.Split(separator);
+            foreach (var cubeIndex in items)
+                cube.Add(int.Parse(cubeIndex));
+
+            var nulSeq = new List<int>();
+            for (int i = 0; i < NumPublicVar + 1; i++)
+            {
+                nulSeq.Add(0);
+            }
+
+            var superpoly = new List<int>();
+            var superpoly2 = new List<List<int>>();
+            if (linearity_test(new int[NumPublicVar], cube))
+            {
+                superpoly = ComputeSuperpoly(new int[NumPublicVar], cube);
+
+                if ((!(superpoly.SequenceEqual(nulSeq))))
+                {
+                    Console.WriteLine(GetLogMessage1(cube, superpoly));
+                }
+            }
+
+            superpoly2 = new List<List<int>>();
+            if (quadratic_test(new int[NumPublicVar], cube))
+            {
+                superpoly2 = ComputeSuperpoly2(new int[NumPublicVar], SecretVariableIndexes(new int[NumPublicVar], cube), cube);
+                                              
+                if (superpoly2[1].Sum() != 0)
+                {
+                    Console.WriteLine(GetLogMessage2(cube, superpoly2));
+                }
+            }
+        }
+
+
         /// <summary>
         /// Does the actual CubeAttack processing
         /// </summary>
@@ -617,6 +665,9 @@ namespace CubeAttack
                 case CubeAttackMode.online:
                     OnlinePhase();
                     break;
+                case CubeAttackMode.setPublicBits:
+                    SetPublicBitsPhase();
+                    break;
             }
         }
 
@@ -630,24 +681,32 @@ namespace CubeAttack
             ProcessCubeAttack(CubeAttackMode.online);
         }
 
+        public void SetPublicBits()
+        {
+            ProcessCubeAttack(CubeAttackMode.setPublicBits);
+        }
+
+        
         private static void Main(string[] args)
         {
-            Preprocessing();
-           //   Online();
-           // var A = new List<int>() { 2 };
-           // var v = new int[] { 0, 0, 0 };
+            //Preprocessing();
+            //Online();
+            //SetPublicBitsPhase();
+
+            //var A = new List<int>() { 2 };
+            //var v = new int[] { 0, 0, 0 };
             //var v1 = new int[] { 0, 0, 0 };
             //var pubVarElement = new int[] { 0, 0, 0 };
-          //  Console.WriteLine(linearity_test(v,A));
+            //Console.WriteLine(linearity_test(v,A));
             //ComputeSuperpoly2(v, SecretVariableIndexes(v, A),A);
             //Console.WriteLine(Superpoly2AsString(ComputeSuperpoly2(v, SecretVariableIndexes(v, A), A)));
-   
+
             //BigInteger key = Operation.BigInteger_W.ToHex("FFFFFFFFFFFFFFFFFFFF");
             //BigInteger cipher = Operation.BigInteger_W.ToHex("3333DCD3213210D2");
-
+            //Console.WriteLine(key);
             //Present A = new Present(key);
             //Console.WriteLine(A.Encrypt(0).ToString("X"));
-
+            Console.WriteLine("Press Enter for exit");
             Console.ReadLine(); 
         }
 
