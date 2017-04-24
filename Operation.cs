@@ -93,27 +93,49 @@ namespace Operation
         }
     }
 
-    class BigInteger_W
+    public class BigInteger_W
     {
         /// <summary>
         /// Convert decimal value into hex.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        static public BigInteger ToHex(string value)
+        public static BigInteger FromHexToDec(string value)
         {
             BigInteger output = BigInteger.Parse("00" + value, NumberStyles.AllowHexSpecifier);
             return output;
         }
     }
 
-    class Math
+    public class MathHelper
     {
-        public static int HammingWeight(int value)
+        public static int BitCount(BigInteger key)
         {
-            value = value - ((value >> 1) & 0x55555555);
-            value = (value & 0x33333333) + ((value >> 2) & 0x33333333);
-            return (((value + (value >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+            int bitC = 0;
+
+            for (int i = 0; i < BigInteger.Log(key, 2) + 1; i++)
+            {
+                if (((key >> i) & 1) == 1) { bitC++; };
+            }
+            return bitC;
+        }
+
+        public static int GetIBit(int value, int index)
+        {
+            return (value >> index) & 1;
+        }
+
+        public static BigInteger GetBigIntFromIndexArray(int[] bitArray)
+        {
+            BigInteger value = 0;
+
+            for (int i = bitArray.Length-1; i>0; i--)
+            {
+                if (bitArray[i] == 1)
+                    value += BigInteger.Pow(2, bitArray.Length-i-1);
+            }
+
+            return value;
         }
     }
 

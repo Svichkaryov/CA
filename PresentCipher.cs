@@ -35,11 +35,11 @@ public class Present : ICipher
     {
         this.rounds = rounds;
 
-        if (BitCount(key) > 128)
+        if (Operation.MathHelper.BitCount(key) > 128)
         {
             throw new Exception("Key too big. It has to be either 80 or 128 bit long.");
         }
-		if (BitCount(key) > 80)
+		if (Operation.MathHelper.BitCount(key) > 80)
         {
             roundKeys = GenerateRoundkeys128(key, rounds);
         }
@@ -50,7 +50,7 @@ public class Present : ICipher
     }
 
 
-    public Present(BigInteger key) : this(key,32) { }
+    public Present(BigInteger key) : this(key,1) { }
   
     private BigInteger[] GenerateRoundkeys80(BigInteger key, int rounds)
     {
@@ -192,17 +192,6 @@ public class Present : ICipher
     private BigInteger[] GetRoundKeys()
     {
         return roundKeys;
-    }
-
-    public static int BitCount(BigInteger key)
-    {
-        int bitC = 0;
-
-        for (int i = 1; i < BigInteger.Log(key, 2) + 1; i++)
-        {
-            if (((key >> (i - 1)) & 1) == 1) { bitC++; }; 
-        }
-        return bitC;
     }
 
 }

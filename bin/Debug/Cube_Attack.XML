@@ -25,7 +25,7 @@
             My stream reader 
         </member>
         <!-- Badly formed XML comment ignored for member "M:Operation.IO.readerFormFile(System.String,System.Int32)" -->
-        <member name="M:Operation.BigInteger_W.ToHex(System.String)">
+        <member name="M:Operation.BigInteger_W.FromHexToDec(System.String)">
             <summary>
             Convert decimal value into hex.
             </summary>
