@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using OM = Operation.MathHelper;
 
-namespace CubeAttackTest
+namespace NAttack
 {
-    class CubeAttack
+    /// <summary>
+    /// Class for attack on stream ciphers
+    /// </summary>
+    class CCubeAttackSC
     {
         static private string outputKeyBits;
         static private int[] key = { 1, 0, 1 };
@@ -17,12 +21,14 @@ namespace CubeAttackTest
 
         static public int NumLinearTest = 100;
         static public int NumQuadraticTest = 100;
-        static public int NumSecretParam = 80;   // number of secret param(lenght of key in the cipher implemention)
-        static public int NumPublicVar = 80;
+        static public int NumSecretParam = 3;   // number of secret param(lenght of key in the cipher implemention)
+        static public int NumPublicVar = 3;
 
         static public Matrix.Matrix superpolyMatrix = null;
         static public List<List<int>> listCubeIndexes1 = null;
         static public List<List<int>> listCubeIndexes2 = null;
+        static public List<List<int>> listCubeIndexesTest = null;
+
         static public Vector.Vector outputBits = null;
 
         /// <summary>
@@ -55,9 +61,8 @@ namespace CubeAttackTest
         /// <returns>A boolean value indicating if the superpoly is probably linear or not.</returns>
         static public bool linearity_test(int[] v, List<int> maxterm)
         {
-            Random rnd = new Random(DateTime.Now.Millisecond);
-            int[] x = new int[NumSecretParam];
-            int[] y = new int[NumSecretParam];
+            int[] x = OM.RandomGenerator(NumPublicVar);
+            int[] y = OM.RandomGenerator(NumPublicVar);
             int[] xy = new int[NumSecretParam];
             int[] secVarElement = new int[NumSecretParam];
             int res = 0;
@@ -66,8 +71,6 @@ namespace CubeAttackTest
             {
                 for (int j = 0; j < NumSecretParam; j++)
                 {
-                    x[j] = rnd.Next(0, 2);
-                    y[j] = rnd.Next(0, 2);
                     xy[j] = x[j] ^ y[j];
                 }
 
@@ -88,10 +91,9 @@ namespace CubeAttackTest
 
         static public bool quadratic_test(int[] v, List<int> maxterm)
         {
-            Random rnd = new Random(DateTime.Now.Millisecond);
-            int[] x = new int[NumSecretParam];
-            int[] y = new int[NumSecretParam];
-            int[] z = new int[NumSecretParam];
+            int[] x = OM.RandomGenerator(NumPublicVar);
+            int[] y = OM.RandomGenerator(NumPublicVar);
+            int[] z = OM.RandomGenerator(NumPublicVar);
             int[] xy = new int[NumSecretParam];
             int[] xz = new int[NumSecretParam];
             int[] zy = new int[NumSecretParam];
@@ -102,9 +104,6 @@ namespace CubeAttackTest
             {
                 for (int j = 0; j < NumSecretParam; j++)
                 {
-                    x[j] = rnd.Next(0, 2);
-                    y[j] = rnd.Next(0, 2);
-                    z[j] = rnd.Next(0, 2);
                     xy[j] = x[j] ^ y[j];
                     xz[j] = x[j] ^ z[j];
                     zy[j] = z[j] ^ y[j];
@@ -687,13 +686,17 @@ namespace CubeAttackTest
 
         static public List<int> ComputeSuperpolyForBlockCipher(int[] pubVarElement, List<int> maxterm)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+
             int constant = 0;
             int coeff = 0;
             List<int> superpoly = new List<int>();
             int[] secVarElement = new int[NumSecretParam];
 
-            BigInteger key = Operation.BigInteger_W.FromHexToDec("0000000000000000");
-            Present A = new Present(key);
+            BigInteger key = Operation.BigInteger_W.FromHexToDec("00000000000000000000");
+            Present A = new Present(0);
 
             // Compute the free term such:
             // sume over selected cube, and other variables into 0;
@@ -701,7 +704,7 @@ namespace CubeAttackTest
             {
                 for (int j = 0; j < maxterm.Count; j++)
                     pubVarElement[maxterm[j]] = (i & ((ulong)1 << j)) > 0 ? 1 : 0;
-                constant ^= OM.GetIBit(OM.BitCount(A.Encrypt(OM.GetBigIntFromIndexArray(pubVarElement))), 1);
+                constant ^= OM.GetIBit(OM.BitCount(A.Encrypt(OM.GetBigIntFromIndexArrayFromMSB(pubVarElement))), 2);
             }
             superpoly.Add(constant);
 
@@ -713,19 +716,147 @@ namespace CubeAttackTest
                 for (ulong i = 0; i < Math.Pow(2, maxterm.Count); i++)
                 {
                     secVarElement[k] = 1;
-                    key = OM.GetBigIntFromIndexArray(secVarElement);
+                    key = OM.GetBigIntFromIndexArrayFromMSB(secVarElement);
                     A = new Present(key);
                     for (int j = 0; j < maxterm.Count; j++)
                         pubVarElement[maxterm[j]] = (i & ((ulong)1 << j)) > 0 ? 1 : 0;
-                    coeff ^= OM.GetIBit(OM.BitCount(A.Encrypt(OM.GetBigIntFromIndexArray(pubVarElement))), 1);
+                    coeff ^= OM.GetIBit(OM.BitCount(A.Encrypt(OM.GetBigIntFromIndexArrayFromMSB(pubVarElement))), 2);
                 }
                 superpoly.Add(constant ^ coeff);
-
 
                 coeff = 0;
                 secVarElement[k] = 0;
             }
+
+            // Get the elapsed time as a TimeSpan value.
+            TimeSpan ts = stopWatch.Elapsed;
+
+            // Format and display the TimeSpan value.
+            string elapsedTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+         //   Console.WriteLine("RunTime " + elapsedTime);
+
             return superpoly;
         }
+
+        static public void PreprocessingPhase2()
+        {
+            superpolyMatrix = new Matrix.Matrix(0, NumSecretParam + 1);
+            listCubeIndexes1 = new List<List<int>>();
+            listCubeIndexes2 = new List<List<int>>();
+            var nulSeq = new List<int>();
+            for (int i = 0; i < NumPublicVar + 1; i++)
+            {
+                nulSeq.Add(0);
+            }
+
+            int maxCubeSize = NumPublicVar;
+            double numOfSubsets = Math.Pow(2, NumPublicVar);
+            int lci1_size = 1;
+            int lci2_size = 0;
+
+            using (StreamWriter sw = new StreamWriter(Param.Path.PathToTheFolderResult + "preprocessingPhaseResult1" + ".txt", false, Encoding.Default))
+            {
+                using (StreamWriter sw2 = new StreamWriter(Param.Path.PathToTheFolderResult + "preprocessingPhaseResult2" + ".txt", false, Encoding.Default))
+                {
+                    while (lci1_size < maxCubeSize + 1)   // find lci_size'th cube
+                    {
+                        // iterate through all the cubes
+                        for (int i = 1; i < numOfSubsets; i++)
+                        {
+                            // cube formation
+                            listCubeIndexes1.Add(new List<int>());
+
+                            for (int j = maxCubeSize; j > -1; j--)  // to adding into list in right order(for beauty).(But not necessarily).
+                            {
+                                if (((i >> (j - 1)) & 1) == 1)      // getting the j-th bit of i (right to left).
+                                {
+                                    listCubeIndexes1[lci1_size - 1].Add(maxCubeSize - j);    // believe that indexing cubes from left to right.
+                                }
+                            }
+
+                       //     Console.WriteLine("Computing for such cube: {" + string.Join(",", listCubeIndexes1[lci1_size - 1]) + "}");
+
+                            var superpoly = new List<int>();
+                            var superpoly2 = new List<List<int>>();
+                            if (linearity_test(new int[NumPublicVar], listCubeIndexes1[lci1_size - 1]))
+                            {
+                                superpoly = ComputeSuperpolyForBlockCipher(new int[NumPublicVar], listCubeIndexes1[lci1_size - 1]);
+                                if ((!(superpoly.SequenceEqual(nulSeq))) & (!InMatrix(superpoly, superpolyMatrix)))
+                                {
+                                    superpolyMatrix = superpolyMatrix.AddRow(superpoly);
+                                    if (!IsLinearIndependent(superpolyMatrix))
+                                    {
+                                        superpolyMatrix = superpolyMatrix.DeleteLastRow();
+                                        listCubeIndexes1.RemoveAt(lci1_size - 1);
+                                      //  Console.WriteLine("bad cube");
+                                      //  Console.WriteLine();
+                                        continue;
+                                    }
+
+                                    Console.WriteLine(GetLogMessage1(listCubeIndexes1[lci1_size - 1], superpoly));
+                                    sw.WriteLine(GetLogMessage1(listCubeIndexes1[lci1_size - 1], superpoly));
+
+                                    lci1_size++;
+                                    continue;
+                                }
+                                listCubeIndexes1.RemoveAt(lci1_size - 1);
+                                continue;
+                            }
+                            listCubeIndexes1.RemoveAt(lci1_size - 1);
+                            continue;
+                        }
+                    }
+                    sw2.Close();
+                }
+                sw.Close();
+            }
+
+            Operation.Serialize_W.serialize_w(superpolyMatrix, "superpolyMatrix");
+            Operation.Serialize_W.serialize_w(listCubeIndexes1, "cubeIndexes1");
+        }
+        static BigInteger KEY = Operation.BigInteger_W.FromHexToDec("AF324");
+        static Present Abonent = new Present(KEY);
+        static public void OnlinePhase2()
+        {
+            //outputBits = new Vector.Vector(NumSecretParam);
+            int[] outpu = new int[4];
+            listCubeIndexesTest = new List<List<int>>();
+           // var superpolyMatrixWithoutConst = new Matrix.Matrix(NumSecretParam, NumSecretParam);
+            int[] pub = new int[NumPublicVar];
+
+            //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 46, 44 });
+            //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 56, 51, 50, 48 });
+            listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 57, 51, 50, 48 });
+            
+            listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 51, 49 });
+            listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 54, 52 });
+            listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 50, 48 });
+
+
+
+            //   superpolyMatrixWithoutConst = superpolyMatrix.DeleteFirstColumn();
+                    
+            for (int i = 0; i < listCubeIndexesTest.Count(); i++)
+            {
+                for (int g = 0; g < NumPublicVar; g++)
+                    pub[g] = 0;
+                for (ulong j = 0; j < Math.Pow(2, listCubeIndexesTest[i].Count()); j++)
+                {
+                    for (int k = 0; k < listCubeIndexesTest[i].Count(); k++)
+                        pub[listCubeIndexesTest[i][k]] = (j & ((ulong)1 << k)) > 0 ? 1 : 0;
+                    outpu[i] ^=  OM.GetIBit(OM.BitCount(Abonent.Encrypt(OM.GetBigIntFromIndexArrayFromMSB(pub))), 2);
+                }
+             //   outputBits[i] ^= superpolyMatrix[i, 0];
+                Console.WriteLine("{0} iter: {1}",i,outpu[i]);
+               
+            }
+
+          //  var _key = new Vector.Vector(NumSecretParam);
+          //  _key = superpolyMatrixWithoutConst.Inverse() * outputBits;
+
+//            Console.WriteLine(OutputKey(_key));
+        }
+
+
     }
 }

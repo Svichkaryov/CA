@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace Operation
 {
@@ -120,23 +121,76 @@ namespace Operation
             return bitC;
         }
 
+        public static int BitCount(BigInteger key,int nByte)
+        {
+            int bitC = 0;
+
+            for (int i = 8*nByte; i < 8*nByte+8; i++)
+            {
+                if (((key >> i) & 1) == 1) { bitC++; };
+            }
+            return bitC;
+        }
+
+
         public static int GetIBit(int value, int index)
         {
             return (value >> index) & 1;
         }
 
-        public static BigInteger GetBigIntFromIndexArray(int[] bitArray)
+        public static BigInteger GetBigIntFromIndexArrayFromLSB(int[] bitArray)
         {
             BigInteger value = 0;
 
-            for (int i = bitArray.Length-1; i>0; i--)
+            for (int i = 0; i<bitArray.Length; i++)
             {
                 if (bitArray[i] == 1)
-                    value += BigInteger.Pow(2, bitArray.Length-i-1);
+                    value += BigInteger.Pow(2, bitArray.Length-i-1 );
             }
 
             return value;
         }
+
+        public static BigInteger GetBigIntFromIndexArrayFromMSB(int[] bitArray)
+        {
+            BigInteger value = 0;
+
+            for (int i = 0; i < bitArray.Length; i++)
+            {
+                if (bitArray[i] == 1)
+                    value += BigInteger.Pow(2, i);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Lehmer High randon generator.
+        /// </summary>
+        public static int[] RandomGenerator(int size)
+        {
+            Random randx0 = new Random(DateTime.Now.Millisecond);
+            ulong m = (ulong)Math.Pow(2, 32);
+            ulong a = (ulong)Math.Pow(2, 16) + 1;
+            ulong c = 119;
+            int[] seq = new int[size];
+            ulong xi = (ulong)randx0.Next(1, (int)Math.Pow(2, 30));
+            
+            for (int i = 0; i < size / 8; i++)
+            {
+                xi = (a * xi + c) % m;
+                int xcasted = (int)xi;
+                for (int j = 25; j < 33; i++)
+                {
+                 seq[i] = ((xcasted >> j) & 1);
+                }
+                xi = (ulong)xcasted;
+            }
+
+            return seq;
+        }
+
+
     }
 
 }
