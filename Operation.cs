@@ -132,6 +132,28 @@ namespace Operation
             return bitC;
         }
 
+        public static int BitCount(int key)
+        {
+            int bitC = 0;
+
+            for (int i = 0; i < BigInteger.Log(key, 2) + 1; i++)
+            {
+                if (((key >> i) & 1) == 1) { bitC++; };
+            }
+            return bitC;
+        }
+
+        public static int BitCount(int key, int nByte)
+        {
+            int bitC = 0;
+
+            for (int i = 8 * nByte; i < 8 * nByte + 8; i++)
+            {
+                if (((key >> i) & 1) == 1) { bitC++; };
+            }
+            return bitC;
+        }
+
 
         public static int GetIBit(int value, int index)
         {
@@ -169,25 +191,59 @@ namespace Operation
         /// </summary>
         public static int[] RandomGenerator(int size)
         {
+            int[] seq = new int[size];
+            Encoding enc = Encoding.GetEncoding(1251);
+            Random random = new Random(DateTime.Now.Millisecond);
+            var state_L20 = new List<int>();
+            for (int j = 0; j < 20; j++)
+                state_L20.Add(random.Next(0, 2));
+
+            for (int i = 0; i < size; i++)
+            {
+                state_L20.Add(state_L20[17] ^ state_L20[15] ^ state_L20[11] ^ state_L20[0]);
+                seq[i]=state_L20[0];
+                state_L20.RemoveAt(0);
+            }
+
+            return seq;
+        }
+
+        public static List<int> RandomGeneratorList(int size)
+        {
             Random randx0 = new Random(DateTime.Now.Millisecond);
             ulong m = (ulong)Math.Pow(2, 32);
             ulong a = (ulong)Math.Pow(2, 16) + 1;
             ulong c = 119;
-            int[] seq = new int[size];
+            List<int> seq = new List<int>(size);
             ulong xi = (ulong)randx0.Next(1, (int)Math.Pow(2, 30));
-            
-            for (int i = 0; i < size / 8; i++)
+
+            for (int i = 0; i < size; i++)
             {
                 xi = (a * xi + c) % m;
                 int xcasted = (int)xi;
-                for (int j = 25; j < 33; i++)
+                for (int j = 25; j < 33; j++)
                 {
-                 seq[i] = ((xcasted >> j) & 1);
+                    seq.Add(((xcasted >> j) & 1));
                 }
                 xi = (ulong)xcasted;
             }
 
             return seq;
+        }
+
+        public static ushort[] ConvertFromBoolVectorToByteArray(int[] boolVector,int byteVectorSize)
+        {
+            ushort[] byteV = new ushort[byteVectorSize];
+            for (int b = 0; b < boolVector.Length/ byteVectorSize; b++)
+            {
+                for (int x = b * byteVectorSize; x < b * byteVectorSize + byteVectorSize; x++)
+                    if (boolVector[x] == 1)
+                    {
+                        double deg = x - b * byteVectorSize;
+                        byteV[b] += (ushort)Math.Pow(2, deg);
+                    }
+            }
+            return byteV;
         }
 
 

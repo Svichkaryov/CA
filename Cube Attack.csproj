@@ -47,15 +47,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcornCipher.cs" />
-    <Compile Include="CubeAttackBC.cs" />
-    <Compile Include="CubeAttackSC.cs" />
+    <Compile Include="CubeAttack.cs" />
+    <Compile Include="CubeAttackSettings.cs" />
     <Compile Include="ICipher.cs" />
+    <Compile Include="LedCipher.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Param.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="PresentCipher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpeckCipher.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>
   <ItemGroup>

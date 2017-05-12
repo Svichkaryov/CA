@@ -1,2 +1,0 @@
-Superpoly: x0*x1 	Cube indexes: {2}
-
