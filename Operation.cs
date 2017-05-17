@@ -154,7 +154,6 @@ namespace Operation
             return bitC;
         }
 
-
         public static int GetIBit(int value, int index)
         {
             return (value >> index) & 1;
@@ -246,7 +245,16 @@ namespace Operation
             return byteV;
         }
 
-
+        public static long combination(long n, long k)
+        {
+            double sum = 0;
+            for (long i = 0; i < k; i++)
+            {
+                sum += Math.Log10(n - i);
+                sum -= Math.Log10(i + 1);
+            }
+            return (long)Math.Pow(10, sum);
+        }
     }
 
 }

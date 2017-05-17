@@ -10,11 +10,17 @@ namespace NCubeAttack
        
         private static void Main(string[] args)
         {
-            CCubeAttack A = new CCubeAttack(CubeAttackSettings.CipherName.present);
-            //CCubeAttack.Preprocessing();
-           // CCubeAttack.Online();
-            CCubeAttack.UserMode();
+             CCubeAttack A = new CCubeAttack(CubeAttackSettings.CipherName.speck32_64);
+             CCubeAttack.Preprocessing();
+            //CCubeAttack.Online();
+             //  CCubeAttack.UserMode();
 
+            //  long v = 4; // current permutation of bits 
+            //   long w = 0; // next permutation of bits
+
+            //   long t = (v | (v - 1)) + 1;
+            //   w = (t | ((((t & -t) / (v & -v)) >> 1) - 1));
+            //   Console.WriteLine(w);
             // int[] t1 = new int[64];
             // int[] t2 = new int[64];
             // int[] t3 = new int[100];
@@ -23,8 +29,30 @@ namespace NCubeAttack
             //   t2 = Operation.MathHelper.RandomGenerator(10);
             //   t3 = Operation.MathHelper.RandomGenerator(10);
 
-         //     CCubeAttack.PreprocessingPhase2();
+            //     CCubeAttack.PreprocessingPhase2();
 
+            //int n = 5;
+
+            //long cp_i = 1; // current permutation of bits 
+            //long cp = 1;
+            //long np = 0; // next permutation of bits
+
+            //for (int i = 1; i < n + 1 ; i++)
+            //{
+            //    for (int j = 0; j < Operation.MathHelper.combination(n, i); j++)
+            //    {
+            //        Console.WriteLine(cp);
+            //        long t = (cp | (cp - 1)) + 1;
+            //        np = (t | ((((t & -t) / (cp & -cp)) >> 1) - 1));
+            //        cp = np;
+            //    }
+
+            //    Console.WriteLine("------------------");
+            //    cp_i = cp_i * 2 + 1;
+            //    cp = cp_i;
+            //}
+
+            //Console.WriteLine(Math.Log(16)/Math.Log(2));
 
 
             //int[,] state = new int[4,4];
@@ -114,17 +142,18 @@ namespace NCubeAttack
             //    Console.WriteLine("true");
             //}
 
-            // var cube = new List<int> { 63, 61, 23, 20 };
-            //  Console.WriteLine(CCubeAttackSC.SuperpolyAsString(CCubeAttackSC.ComputeSuperpolyForBlockCipher(new int[CCubeAttackSC.NumPublicVar], new List<int> { 25})));
-            //cube = CCubeAttackSC.SecretVariableIndexesForBlockCipher(new int[64], new List<int> { 63, 61, 10, 8 });
-            //  var listt = new List<List<int>> { };
-            //listt = CCubeAttackSC.ComputeSuperpoly2ForBlockCipher(new int[64], CCubeAttackSC.SecretVariableIndexesForBlockCipher(new int[64], cube), cube);
-            //Console.WriteLine(CCubeAttackSC.Superpoly2AsString(CCubeAttackSC.ComputeSuperpoly2ForBlockCipher(new int[64], CCubeAttackSC.SecretVariableIndexesForBlockCipher(new int[64],cube),cube)));
+            //   var cube = new List<int> { 63, 62, 7, 5 };
+            //     var cube = new List<int> { };
+            //   // Console.WriteLine(CCubeAttack.SuperpolyAsString(CCubeAttack.ComputeSuperpolyForBlockCipher(new int[CCubeAttack.NumPublicVar], new List<int> { 25})));
+            //   cube = CCubeAttack.SecretVariableIndexes(new int[64], new List<int> { 63, 61, 10, 8 });
+            //      var listt = new List<List<int>> { };
+            //listt = CCubeAttack.ComputeSuperpoly2(new int[64], CCubeAttack.SecretVariableIndexes(new int[64], new List<int> { 63, 62, 7, 5 }), new List<int> { 62, 61, 6, 4 });
+            //Console.WriteLine(CCubeAttack.Superpoly2AsString(CCubeAttack.ComputeSuperpoly2(new int[64], CCubeAttack.SecretVariableIndexes(new int[64], new List<int> { 63, 62, 7, 5 }), new List<int> { 63, 62, 7, 5 })));
 
 
 
             //ushort[] plaintext = new ushort[2] { 0x694c, 0x6574 };
-            //Console.WriteLine(Operation.MathHelper.GetIBit(Operation.MathHelper.BitCount(plaintext[0]),1));
+            //Console.WriteLine(Operation.MathHelper.GetIBit(Operation.MathHelper.BitCount(plaintext[0]), 1));
             //ushort[] key = new ushort[4] { 0x0100, 0x0908, 0x1110, 0x1918 };
             //ushort[] ciphertext = new ushort[2];
             //SpeckCipher.speck_block(plaintext, key, ciphertext);
@@ -134,9 +163,23 @@ namespace NCubeAttack
             //Console.WriteLine("Expected:   0x42f2 0xa868\n");
             //Console.WriteLine(0x694c);
 
+            //ushort[] key1 = new ushort[4] { 0x0100, 0x0908, 0x1110, 0x1918 };
+            //ushort[] plaintext1 = new ushort[2] { 0x694c, 0x6574 };
+            //ushort[] ciphertext1 = new ushort[2] { 0x42f2, 0xa868 };
+            //ushort[] actualCipherText1 = new ushort[2] { 0x0000, 0x0000 };
+
+            //SpeckCipher.speck_block(plaintext1, key1, actualCipherText1);
 
             //CubeAttack.ComputeSuperpoly(new int[3], new List<int>() { 0, 1 });
             //   Console.WriteLine(Operation.MathHelper.GetBigIntFromIndexArrayFromMSB(new int[] { 1,0,1,1,1}));
+
+
+            //int[] random1 = Operation.MathHelper.RandomGenerator(10);
+            //Console.WriteLine(Operation.MathHelper.GetBigIntFromIndexArrayFromLSB(random1));
+
+
+            //int[] random2 = Operation.MathHelper.RandomGenerator(10);
+            //Console.WriteLine(Operation.MathHelper.GetBigIntFromIndexArrayFromLSB(random2));
             Console.WriteLine("Press Enter for exit");
             Console.ReadLine(); 
         }

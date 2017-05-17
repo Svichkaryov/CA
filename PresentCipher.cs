@@ -50,7 +50,7 @@ public class Present : ICipher
     }
 
 
-    public Present(BigInteger key) : this(key,1) { }
+    public Present(BigInteger key) : this(key,32) { }
   
     private BigInteger[] GenerateRoundkeys80(BigInteger key, int rounds)
     {
@@ -97,13 +97,13 @@ public class Present : ICipher
     {
         BigInteger state = message;
 
-     //   for (int i = 0; i < rounds-1; i++)
+      //  for (int i = 0; i < rounds-1; i++)
       //  {
             state = AddRoundKey(state, roundKeys[0]);
             state = SBoxLayer(state);
             state = PLayer(state);
-     //   }
-      //  return AddRoundKey(state, roundKeys[rounds - 1]);
+      //  }
+       // return AddRoundKey(state, roundKeys[rounds - 1]);
         return state;
     }
 
@@ -117,8 +117,8 @@ public class Present : ICipher
             state = SBoxLayer_dec(state);
         }
 
-        //return AddRoundKey(state, roundKeys[0]);
-        return state;
+        return AddRoundKey(state, roundKeys[0]);
+        //return state;
     }
 
     private BigInteger AddRoundKey(BigInteger state, BigInteger roundKey)

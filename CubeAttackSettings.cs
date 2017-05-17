@@ -25,25 +25,25 @@ namespace NCubeAttack
 
         public CubeAttackSettings()
         {
-            if (CCubeAttack.BlackBoxID == 0)
+            if (CCubeAttack.BlackBoxID == 0)    // test
             {
                 NumSecretParam = 3;
                 NumPublicVar = 3;
             }
 
-            if (CCubeAttack.BlackBoxID == 1)
+            if (CCubeAttack.BlackBoxID == 1)    // Present       
             {
                 NumSecretParam = 80;   
                 NumPublicVar = 64;
             }
 
-            if (CCubeAttack.BlackBoxID == 2)
+            if (CCubeAttack.BlackBoxID == 2)     // Speck
             {
                 NumSecretParam = 64;
                 NumPublicVar = 32;
             }
 
-            if (CCubeAttack.BlackBoxID == 3)
+            if (CCubeAttack.BlackBoxID == 3)     // Led
             {
                 NumSecretParam = 80;
                 NumPublicVar = 64;
