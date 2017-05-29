@@ -1,19 +1,99 @@
-﻿using System;
+﻿#define PRINT
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+
+
 
 namespace NCubeAttack
 {
     internal class Program
     {
-       
+
         private static void Main(string[] args)
         {
-             CCubeAttack A = new CCubeAttack(CubeAttackSettings.CipherName.speck32_64);
-             CCubeAttack.Preprocessing();
-            //CCubeAttack.Online();
-             //  CCubeAttack.UserMode();
+            CCubeAttack A = new CCubeAttack(CubeAttackSettings.CipherName.speck32_64);
+            CCubeAttack.Preprocessing();
+            //  CCubeAttack.Online();
+           // CCubeAttack.OnlinePhase2();
+    
+            CCubeAttack.UserMode();
+            
+            //string answer = "";
+            //while (answer != "e")
+            //{
+            //    Console.WriteLine("action: ");
+            //    answer = Console.ReadLine(); 
+            //    CCubeAttack.UserMode();
+            //}
+
+
+
+            //#if PRINT
+            //            ushort i, j;
+            //#endif
+
+            //            int[] IdeaKey = {
+            //                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            //                0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            //                1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            //                0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            //                1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            //                0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            //                1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            //                0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            //            };
+
+            //            ushort[] state = { 0, 1, 2, 3 };
+            //            //ushort[] key = { 1, 2, 3, 4, 5, 6, 7, 8 };
+            //            ushort[] key = { 0, 0,0, 0, 0, 0, 0, 0 };
+            //            key = Operation.MathHelper.ConvertFromBoolVectorToByteArray(IdeaKey, 16);
+            //            //ushort state[4]={0xFFFF,0xFFFF,0xFFFF,0xFFFF};
+            //            //ushort key[8]={0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF};
+            //            //ushort state[4]={0,0,0,0};
+            //            //ushort key[8]={0,0,0,0,0,0,0,0};
+            //            ushort[] subkey = new ushort[52];
+
+
+            //            IDEACipher.KeyScheduleEncrypt(key, subkey);
+            //#if PRINT
+            //            Console.WriteLine("\n\n----------Encryption Keys----------\n\n");
+            //            for (j = 0; j < 8; j++)
+            //            {
+            //                for (i = 0; i < 6; i++)
+            //                    Console.WriteLine(subkey[6 * j + i].ToString("X"));
+            //                Console.WriteLine();
+            //            }
+
+            //            for (i = 0; i < 4; i++) Console.WriteLine(subkey[48 + i].ToString("X"));
+            //            Console.WriteLine("\n\n");
+            //            Console.WriteLine("\n\n----------Fin Encryption Keys----------\n\n");
+            //#endif
+            //            IDEACipher.Encrypt(state, subkey);
+            //#if PRINT
+            //            Console.WriteLine("\n\n----------Cipher text----------\n\n");
+            //            for (i = 0; i < 4; i++) Console.WriteLine(state[i].ToString("X"));
+            //            Console.Write("\n\n");
+            //            Console.WriteLine("\n\n----------Fin Cipher text----------\n\n");
+            //#endif
+
+
+            //            IDEACipher.KeyScheduleDecrypt(key, subkey);
+            //#if PRINT
+            //            Console.WriteLine("\n\n----------Decryption Keys----------\n\n");
+            //            for (j = 0; j < 8; j++) { for (i = 0; i < 6; i++) Console.WriteLine(subkey[6 * j + i].ToString("X")); Console.Write("\n"); }
+            //            for (i = 0; i < 4; i++) Console.WriteLine(subkey[48 + i].ToString("X")); Console.Write("\n\n");
+            //            Console.WriteLine("\n\n----------Fin Decryption Keys----------\n\n");
+            //#endif
+            //            IDEACipher.Encrypt(state, subkey);
+            //#if PRINT
+            //            Console.WriteLine("\n\n----------Plain text----------\n\n");
+            //            for (i = 0; i < 4; i++) Console.WriteLine(state[i].ToString("X")); Console.Write("\n\n");
+            //            Console.Write("\n\n----------Fin Plain text----------\n\n");
+            //#endif
+
 
             //  long v = 4; // current permutation of bits 
             //   long w = 0; // next permutation of bits
@@ -181,7 +261,7 @@ namespace NCubeAttack
             //int[] random2 = Operation.MathHelper.RandomGenerator(10);
             //Console.WriteLine(Operation.MathHelper.GetBigIntFromIndexArrayFromLSB(random2));
             Console.WriteLine("Press Enter for exit");
-            Console.ReadLine(); 
+            Console.ReadLine();
         }
 
     }

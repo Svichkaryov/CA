@@ -50,7 +50,7 @@ public class Present : ICipher
     }
 
 
-    public Present(BigInteger key) : this(key,32) { }
+    public Present(BigInteger key) : this(key,1) { }
   
     private BigInteger[] GenerateRoundkeys80(BigInteger key, int rounds)
     {

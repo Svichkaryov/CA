@@ -50,13 +50,16 @@
     <Compile Include="CubeAttack.cs" />
     <Compile Include="CubeAttackSettings.cs" />
     <Compile Include="ICipher.cs" />
+    <Compile Include="IDEACipher.cs" />
     <Compile Include="LedCipher.cs" />
+    <Compile Include="MidoriCiphercs.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Param.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="PresentCipher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SeaCipher.cs" />
     <Compile Include="SpeckCipher.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>

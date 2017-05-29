@@ -154,6 +154,19 @@ namespace Operation
             return bitC;
         }
 
+        public static int BitCount(List<int> superpoly)
+        {
+            int bitC = 0;
+
+            for (int i = 0; i < superpoly.Count; i++)
+            {
+                if (superpoly[i] == 1)
+                    bitC += 1;
+            }
+
+            return bitC;
+        }
+
         public static int GetIBit(int value, int index)
         {
             return (value >> index) & 1;
@@ -230,15 +243,33 @@ namespace Operation
             return seq;
         }
 
-        public static ushort[] ConvertFromBoolVectorToByteArray(int[] boolVector,int byteVectorSize)
+        public static ushort[] ConvertFromBoolVectorToByteArray(int[] boolVector, int wordVectorSize)
         {
-            ushort[] byteV = new ushort[byteVectorSize];
-            for (int b = 0; b < boolVector.Length/ byteVectorSize; b++)
+            int sizeByteV = boolVector.Length / wordVectorSize;
+            ushort[] byteV = new ushort[sizeByteV];
+            for (int b = 0; b < sizeByteV; b++)
             {
-                for (int x = b * byteVectorSize; x < b * byteVectorSize + byteVectorSize; x++)
+                for (int x = b * wordVectorSize; x < b * wordVectorSize + wordVectorSize; x++)
                     if (boolVector[x] == 1)
                     {
-                        double deg = x - b * byteVectorSize;
+                        double deg = x - b * wordVectorSize;
+                        byteV[b] += (ushort)Math.Pow(2, deg);
+                    }
+            }
+            return byteV;
+        }
+
+
+        public static int[] ConvertFromBoolVectorToIntArray(int[] boolVector, int wordVectorSize)
+        {
+            int sizeByteV = boolVector.Length / wordVectorSize;
+            int[] byteV = new int[sizeByteV];
+            for (int b = 0; b < sizeByteV; b++)
+            {
+                for (int x = b * wordVectorSize; x < b * wordVectorSize + wordVectorSize; x++)
+                    if (boolVector[x] == 1)
+                    {
+                        double deg = x - b * wordVectorSize;
                         byteV[b] += (ushort)Math.Pow(2, deg);
                     }
             }

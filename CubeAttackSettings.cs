@@ -10,18 +10,79 @@ namespace NCubeAttack
     class CubeAttackSettings
     {
         public enum CubeAttackMode { preprocessing, online, setPublicBits };
-        public enum CipherName { test, present, speck32_64, led }
+        public enum CipherName { test, present, speck32_64, led, idea }
 
         public int NumLinearTest    = 100;
         public int NumQuadraticTest = 100;
+        public int NumConstTest     = 100;
         public int NumSecretParam   = 0;   // number of secret param(lenght of key in the cipher implemention)
         public int NumPublicVar     = 0;
-        private int[] Testkey = { 1, 0, 1 };
 
-        public int[] GetKey()
-        {
-            return Testkey;
-        }
+        private int[] Testkey  = { 1, 0, 1 };
+
+        private int[] SpeckKey = {
+            0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1,
+            0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+        };
+
+        private int[] SpeckKey2 = {
+            0, 0, 1, 0, 1, 0 , 1, 0, 1, 1, 0, 0, 0, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+        };
+         
+        private int[] SpeckKey3 = {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        };
+
+        private int[] PresentKey = {
+            1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1,
+            0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1,
+            0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1,
+            1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1
+        };
+
+        private int[] Present2Key = {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        };
+
+        private int[] IdeaKey = {
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        };
+
+        private int[] IdeaKey2 = {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+        };
+
+        private int[] LedKey = {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+        };
 
         public CubeAttackSettings()
         {
@@ -37,18 +98,53 @@ namespace NCubeAttack
                 NumPublicVar = 64;
             }
 
-            if (CCubeAttack.BlackBoxID == 2)     // Speck
+            if (CCubeAttack.BlackBoxID == 2)    // Speck
             {
                 NumSecretParam = 64;
                 NumPublicVar = 32;
             }
 
-            if (CCubeAttack.BlackBoxID == 3)     // Led
+            if (CCubeAttack.BlackBoxID == 3)    // Led
             {
-                NumSecretParam = 80;
+                NumSecretParam = 64;
                 NumPublicVar = 64;
             }
 
+            if (CCubeAttack.BlackBoxID == 4)    // Idea
+            {
+                NumSecretParam = 128;
+                NumPublicVar = 64;
+            }
+        }
+
+        public int[] GetKey()
+        {
+            if (CCubeAttack.BlackBoxID == 0)    // test
+            {
+                return Testkey;
+            }
+
+            if (CCubeAttack.BlackBoxID == 1)    // Present       
+            {
+                return PresentKey;
+            }
+
+            if (CCubeAttack.BlackBoxID == 2)    // Speck
+            {
+                return SpeckKey2;
+            }
+
+            if (CCubeAttack.BlackBoxID == 3)    // Led
+            {
+                return LedKey;
+            }
+
+            if (CCubeAttack.BlackBoxID == 4)    // Idea
+            {
+                return IdeaKey2;
+            }
+
+            return null;
         }
     } 
 }
