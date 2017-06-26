@@ -842,75 +842,75 @@ namespace NCubeAttack
 
                             var superpoly = new List<int>();
                             var superpoly2 = new List<List<int>>();
-//                            if (LinearityTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1])
-//                               //&& !ConstantTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1])
-//                               )
-//                            {
-//                                superpoly = ComputeSuperpoly(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]);
-//                                if (OM.BitCount(superpoly) <= 4 && OM.BitCount(superpoly) > 0
-//                                // && !ConstantTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1])
-//                                 && (!InMatrix(superpoly, superpolyMatrix))
-//                                     // && (!QuadraticTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]))
-//                                     // && LinearityTest2(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1], superpoly)
-//                                     )
-//                                {
-//                                    superpolyMatrix = superpolyMatrix.AddRow(superpoly);
+                            if (LinearityTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1])
+                               //&& !ConstantTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1])
+                               )
+                            {
+                                superpoly = ComputeSuperpoly(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]);
+                                if (OM.BitCount(superpoly) <= 4 && OM.BitCount(superpoly) > 0
+                                // && !ConstantTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1])
+                                 && (!InMatrix(superpoly, superpolyMatrix))
+                                     // && (!QuadraticTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]))
+                                     // && LinearityTest2(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1], superpoly)
+                                     )
+                                {
+                                    superpolyMatrix = superpolyMatrix.AddRow(superpoly);
 
-//#if (RECORD)
-//                                    //if need search = n equations
-//                                    superpolyMatrix = superpolyMatrix.AddRow(superpoly);
-//                                    if (!IsLinearIndependent(superpolyMatrix))
-//                                    {
-//                                        superpolyMatrix = superpolyMatrix.DeleteLastRow();
-//                                        listCubeIndexes1.RemoveAt(lci1_size - 1);
+#if (RECORD)
+                                    //if need search = n equations
+                                    superpolyMatrix = superpolyMatrix.AddRow(superpoly);
+                                    if (!IsLinearIndependent(superpolyMatrix))
+                                    {
+                                        superpolyMatrix = superpolyMatrix.DeleteLastRow();
+                                        listCubeIndexes1.RemoveAt(lci1_size - 1);
 
-//                                        t = (cp | (cp - 1)) + 1;
-//                                        np = (t | ((((t & -t) / (cp & -cp)) >> 1) - 1));
-//                                        cp = np;
+                                        t = (cp | (cp - 1)) + 1;
+                                        np = (t | ((((t & -t) / (cp & -cp)) >> 1) - 1));
+                                        cp = np;
 
-//                                        //  Console.WriteLine("bad cube");
-//                                        //  Console.WriteLine();
-//                                        continue;
-//                                    }
-//#endif
-//                                    Console.WriteLine(GetLogMessage1(listCubeIndexes1[lci1_size - 1], superpoly));
-//                                    sw.WriteLine(GetLogMessage1(listCubeIndexes1[lci1_size - 1], superpoly));
+                                        //  Console.WriteLine("bad cube");
+                                        //  Console.WriteLine();
+                                        continue;
+                                    }
+#endif
+                                    Console.WriteLine(GetLogMessage1(listCubeIndexes1[lci1_size - 1], superpoly));
+                                    sw.WriteLine(GetLogMessage1(listCubeIndexes1[lci1_size - 1], superpoly));
 
-//                                    t = (cp | (cp - 1)) + 1;
-//                                    np = (t | ((((t & -t) / (cp & -cp)) >> 1) - 1));
-//                                    cp = np;
+                                    t = (cp | (cp - 1)) + 1;
+                                    np = (t | ((((t & -t) / (cp & -cp)) >> 1) - 1));
+                                    cp = np;
 
-//                                    lci1_size++;
-//                                    continue;
-//                                }
-//#if (QUADRATIC)
-//                                superpoly2 = new List<List<int>>();
-//                                if (QuadraticTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]))
-//                                {
-//                                    superpoly2 = ComputeSuperpoly2(new int[settings.NumPublicVar], SecretVariableIndexes(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]),
-//                                                                   listCubeIndexes1[lci1_size - 1]);
-//                                    if (superpoly2[1].Sum() != 0 && OM.BitCount(superpoly2[0]) > 0 && OM.BitCount(superpoly2[0]) < 4)
-//                                    {
-//                                        Console.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
-//                                        sw2.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
+                                    lci1_size++;
+                                    continue;
+                                }
+#if (QUADRATIC)
+                                superpoly2 = new List<List<int>>();
+                                if (QuadraticTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]))
+                                {
+                                    superpoly2 = ComputeSuperpoly2(new int[settings.NumPublicVar], SecretVariableIndexes(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]),
+                                                                   listCubeIndexes1[lci1_size - 1]);
+                                    if (superpoly2[1].Sum() != 0 && OM.BitCount(superpoly2[0]) > 0 && OM.BitCount(superpoly2[0]) < 4)
+                                    {
+                                        Console.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
+                                        sw2.WriteLine(GetLogMessage2(listCubeIndexes1[lci1_size - 1], superpoly2));
 
-//                                        listCubeIndexes2.Add(new List<int>());
-//                                        foreach (var el in listCubeIndexes1[lci1_size - 1])
-//                                            listCubeIndexes2[lci2_size].Add(el);
-//                                        lci2_size++;
-//                                    }
-//                                }
-//#endif
-//                                listCubeIndexes1.RemoveAt(lci1_size - 1);
+                                        listCubeIndexes2.Add(new List<int>());
+                                        foreach (var el in listCubeIndexes1[lci1_size - 1])
+                                            listCubeIndexes2[lci2_size].Add(el);
+                                        lci2_size++;
+                                    }
+                                }
+#endif
+                                listCubeIndexes1.RemoveAt(lci1_size - 1);
 
-//                                t = (cp | (cp - 1)) + 1;
-//                                np = (t | ((((t & -t) / (cp & -cp)) >> 1) - 1));
-//                                cp = np;
+                                t = (cp | (cp - 1)) + 1;
+                                np = (t | ((((t & -t) / (cp & -cp)) >> 1) - 1));
+                                cp = np;
 
-//                                //Console.WriteLine("bad cube");
-//                                //Console.WriteLine();
-//                                continue;
-//                            }
+                                //Console.WriteLine("bad cube");
+                                //Console.WriteLine();
+                                continue;
+                            }
 #if (QUADRATIC)
                             superpoly2 = new List<List<int>>();
                             if (QuadraticTest(new int[settings.NumPublicVar], listCubeIndexes1[lci1_size - 1]))
@@ -1052,7 +1052,7 @@ namespace NCubeAttack
             while (action != "e");
         }
 
-        static public void OnlinePhase2()
+        static public void OnlinePhaseTest()
         {
             //outputBits = new Vector.Vector(NumSecretParam);
             int[] outpu = new int[240];
@@ -1078,32 +1078,14 @@ namespace NCubeAttack
             //listCubeIndexesTest.Add(new List<int> { 31, 12 });
             //listCubeIndexesTest.Add(new List<int> { 31, 13 });
 
-            //listCubeIndexesTest.Add(new List<int> { 63,61,10,8 });
-           
-            listCubeIndexesTest.Add(new List<int> {  29,28,24,22,21});
-                //listCubeIndexesTest.Add(new List<int> { 31,30,22 });
+             listCubeIndexesTest.Add(new List<int> {  29,28,24,22,21});
+            //listCubeIndexesTest.Add(new List<int> { 31,30,22 });
             //listCubeIndexesTest.Add(new List<int> { 31,30,21 });
             //listCubeIndexesTest.Add(new List<int> { 30, 21,20 });
             //listCubeIndexesTest.Add(new List<int> { 30,25,19});
             //listCubeIndexesTest.Add(new List<int> { 30,25,17 });
             //listCubeIndexesTest.Add(new List<int> { 24,9,7 });
             //listCubeIndexesTest.Add(new List<int> { 21,7,5 });
-
-
-            //listCubeIndexesTest.Add(new List<int> { 23,21,15 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 17, 14 });
-            //listCubeIndexesTest.Add(new List<int> { 29, 22, 14 });
-            //listCubeIndexesTest.Add(new List<int> { 18, 16, 15 });
-            //listCubeIndexesTest.Add(new List<int> { 30, 28, 13 });
-            //listCubeIndexesTest.Add(new List<int> { 27, 25, 13 });
-            //listCubeIndexesTest.Add(new List<int> { });
-            //listCubeIndexesTest.Add(new List<int> { });
-            //listCubeIndexesTest.Add(new List<int> { });
-            //listCubeIndexesTest.Add(new List<int> { });
-            //listCubeIndexesTest.Add(new List<int> { });
-            //listCubeIndexesTest.Add(new List<int> { });
-            //listCubeIndexesTest.Add(new List<int> { });
-            //listCubeIndexesTest.Add(new List<int> { });
 
             // Present 1 round 3 bit, 18 vector
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 3, 1 });
@@ -1126,7 +1108,6 @@ namespace NCubeAttack
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 46, 44 });
 
 
-
             for (int i = 0; i < listCubeIndexesTest.Count(); i++)
             {
 
@@ -1142,13 +1123,6 @@ namespace NCubeAttack
                 //outputBits[i] ^= superpolyMatrix[i, 0];
                // Console.WriteLine("{0} iter: {1}", i, outpu[i]);
             }
-            //int[] w = new int[] { 0, 2,3,8,10,11,13,16, 17, 19, 20, 22, 25, 32, 35,36,43, 44,45, 47,48, 50, 52, 55, 59,  63 };
-            //int syka = 0;
-            //foreach (var i in w)
-            //{
-            //    syka ^= settings.GetKey()[i];
-            //}
-            //Console.WriteLine("syka = {0} ",syka);
 
             var superpoly = new List<int>();
             var superpoly2 = new List<List<int>>();
@@ -1157,7 +1131,6 @@ namespace NCubeAttack
             {
                 Console.WriteLine("s: ");
                 if (LinearityTest(new int[settings.NumPublicVar], listCubeIndexesTest[s]))
-                //LinearityTest2(new int[settings.NumPublicVar],listCubeIndexesTest[s],ComputeSuperpoly(new int[settings.NumPublicVar],listCubeIndexesTest[s])))
                 {
                     superpoly = ComputeSuperpoly(new int[settings.NumPublicVar], listCubeIndexesTest[s]);
                     Console.WriteLine(GetLogMessage1(listCubeIndexesTest[s], superpoly, outpu[s]));
@@ -1168,26 +1141,7 @@ namespace NCubeAttack
                     Console.WriteLine(GetLogMessage2(listCubeIndexesTest[s], superpoly2, outpu[s]));
                 }
 
-                // Console.WriteLine("actual = {0}", settings.GetKey()[s]);
             }
-            //  Console.WriteLine("actual = {0}", settings.GetKey()[16]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[19]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[23]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[24]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[27]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[31]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[32]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[35]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[39]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[40]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[43]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[47]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[48]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[51]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[55]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[56]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[59]);
-            //Console.WriteLine("actual = {0}", settings.GetKey()[63]);
         }
     }
 }
