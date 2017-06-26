@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -154,13 +155,37 @@ namespace Operation
             return bitC;
         }
 
+        public static int BitCount(ushort key, int nByte)
+        {
+            int bitC = 0;
+
+            for (int i = 8 * nByte; i < 8 * nByte + 8; i++)
+            {
+                if (((key >> i) & 1) == 1) { bitC++; };
+            }
+            return bitC;
+        }
+
         public static int BitCount(List<int> superpoly)
         {
             int bitC = 0;
 
             for (int i = 0; i < superpoly.Count; i++)
             {
-                if (superpoly[i] == 1)
+                if (superpoly[i] != 0)
+                    bitC += 1;
+            }
+
+            return bitC;
+        }
+
+        public static int CountNotNullEl(List<int> superpoly)
+        {
+            int bitC = 0;
+
+            for (int i = 0; i < superpoly.Count; i++)
+            {
+                if (superpoly[i] != 0)
                     bitC += 1;
             }
 
@@ -208,17 +233,71 @@ namespace Operation
             Random random = new Random(DateTime.Now.Millisecond);
             var state_L20 = new List<int>();
             for (int j = 0; j < 20; j++)
+            {
+                random = new Random(DateTime.Now.Millisecond);
                 state_L20.Add(random.Next(0, 2));
-
+            }
             for (int i = 0; i < size; i++)
             {
+
                 state_L20.Add(state_L20[17] ^ state_L20[15] ^ state_L20[11] ^ state_L20[0]);
-                seq[i]=state_L20[0];
+                seq[i] = state_L20[0];
                 state_L20.RemoveAt(0);
             }
 
             return seq;
         }
+
+        //public static int[] RandomGenerator(int size)
+        //{
+        //    int[] seq = new int[size];
+        //    Encoding enc = Encoding.GetEncoding(1251);
+        //    Random random = new Random();
+        //    var state_L89 = new List<int>();
+        //    for (int j = 0; j < 89; j++)
+        //    {
+        //        random = new Random(DateTime.Now.Millisecond);
+        //        state_L89.Add(random.Next(0, 2));
+        //    }
+
+        //    for (int i = 0; i < size; i++)
+        //    {
+        //        state_L89.Add(state_L89[51] ^ state_L89[0]);
+        //        seq[i] = state_L89[0];
+        //        state_L89.RemoveAt(0);
+        //    }
+
+        //    return seq;
+        //}
+
+        //private const string p = "D5BBB96D30086EC484EBA3D7F9CAEB07";
+        //private const string q = "425D2B9BFDB25B9CF6C416CC6E37B59C1F";
+        //private static Random randomForBM = new Random();
+        //private static Random random = new Random();
+
+        //public static string RandomString(int length)
+        //{
+        //    const string chars = "ABCDEF0123456789";
+        //    return new string(Enumerable.Repeat(chars, length).Select(s => s[randomForBM.Next(s.Length)]).ToArray());
+        //}
+        //public static int[] RandomGenerator(int size)
+        //{
+        //    int[] seq = new int[size];
+        //    string randomHex = RandomString(2);
+        //    BigInteger r0 = BigInteger_W.FromHexToDec(randomHex);
+        //    BigInteger P = BigInteger_W.FromHexToDec(p);
+        //    BigInteger Q = BigInteger_W.FromHexToDec(q);
+        //    BigInteger xi = new BigInteger();
+        //    BigInteger n = BigInteger.Multiply(P, Q);
+
+        //    for (int i = 0; i < size; i++)
+        //    {
+        //        r0 = BigInteger.ModPow(r0, r0, n);
+        //        xi = r0 % 2;
+        //        seq[i] = (int)xi;
+        //    }
+        //    return seq;
+        //}
 
         public static List<int> RandomGeneratorList(int size)
         {
@@ -275,6 +354,24 @@ namespace Operation
             }
             return byteV;
         }
+
+        public static byte[] ConvertFromBoolVectorToByteNibbleArray(int[] boolVector, int wordVectorSize)
+        {
+            int sizeByteV = boolVector.Length / wordVectorSize;
+            byte[] byteV = new byte[sizeByteV];
+            for (int b = 0; b < sizeByteV; b++)
+            {
+                for (int x = b * wordVectorSize; x < b * wordVectorSize + wordVectorSize; x++)
+                    if (boolVector[x] == 1)
+                    {
+                        double deg = x - b * wordVectorSize;
+                        byteV[b] += (byte)Math.Pow(2, deg);
+                    }
+            }
+            return byteV;
+        }
+
+
 
         public static long combination(long n, long k)
         {

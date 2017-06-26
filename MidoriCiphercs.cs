@@ -166,11 +166,11 @@ public class CMidori : ICipher
             MixColumn(state);
             rth_Round_Encrypt_KeyAdd(i, state, K);
         }
-        SubCell(state);
-        for (int i = 0; i <= 15; i++)
-        {
-            state[i] = (byte)(state[i] ^ K[i] ^ K[i + 16]);
-        }
+        //SubCell(state);
+        //for (int i = 0; i <= 15; i++)
+        //{
+        //    state[i] = (byte)(state[i] ^ K[i] ^ K[i + 16]);
+        //}
     }
 
     public void Decrypt(int r, byte[] state, byte[] K)
