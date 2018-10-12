@@ -1,6 +1,6 @@
-﻿//#define FULL
+﻿#define FULL
 #define ITERATE
-#define LEXICOGRAPHICALLY_ORDER
+//#define LEXICOGRAPHICALLY_ORDER
 //#define RANDOM_WALK
 #define QUADRATIC
 //#define RECORD
@@ -145,8 +145,10 @@ namespace NCubeAttack
                     keySpeck = OM.ConvertFromBoolVectorToByteArray(x, 16);
                     plaintext = OM.ConvertFromBoolVectorToByteArray(v, 16);
                     SpeckCipher.speck_block(plaintext, keySpeck, ciphertext);
-                    return OM.GetIBit(OM.BitCount(ciphertext[0]) + OM.BitCount(ciphertext[1]), 2);
-                     
+                   // return OM.GetIBit(OM.BitCount(ciphertext[0]) + OM.BitCount(ciphertext[1]), 1);
+                    return OM.GetIBit(OM.BitCount(ciphertext[1], 0), 3);
+                         
+
                 case 3: // Led
                     int[] p = new int[8];
                     int[] c = new int[8];
@@ -221,16 +223,16 @@ namespace NCubeAttack
             for (int i = 0; i < settings.NumLinearTest; i++)
             {
                 random = new Random(DateTime.Now.Millisecond);
-               // x = OM.RandomGenerator(settings.NumSecretParam);
-               // y = OM.RandomGenerator(settings.NumSecretParam);
-            
-                for(int w=0; i<settings.NumSecretParam;i++)
-                {
-                    random= new Random(DateTime.Now.Millisecond + w);
-                    x[w] = random.Next(0, 2);
-                 }
+                // x = OM.RandomGenerator(settings.NumSecretParam);
+                // y = OM.RandomGenerator(settings.NumSecretParam);
 
-                for (int wq = 0; i < settings.NumSecretParam; i++)
+                for (int w = 0; w < settings.NumSecretParam; w++)
+                {
+                    random = new Random(DateTime.Now.Millisecond + w);
+                    x[w] = random.Next(0, 2);
+                }
+
+                for (int wq = 0; wq < settings.NumSecretParam; wq++)
                 {
                     random = new Random(DateTime.Now.Millisecond + wq);
                     y[wq] = random.Next(0, 2);
@@ -249,7 +251,6 @@ namespace NCubeAttack
                 }
 
                 if (res == 1) return false;
-                if (res == 0) return true;
             }
 
             return true;
@@ -293,6 +294,7 @@ namespace NCubeAttack
 
                     if (res == 0) return false;
                 }
+                
             }
             return true;
         }
@@ -309,27 +311,49 @@ namespace NCubeAttack
             int[] secVarElement = new int[settings.NumSecretParam];
             int res = 0;
             ulong cardinalDegree = (ulong)Math.Pow(2, maxterm.Count);
+            Encoding enc = Encoding.GetEncoding(1251);
+            Random random = new Random(DateTime.Now.Millisecond);
 
-            for (int i = 0; i < settings.NumQuadraticTest; i++)
+            for (int i = 0; i < settings.NumQuadraticTest; ++i)
             {
-                x = OM.RandomGenerator(settings.NumSecretParam);
-                y = OM.RandomGenerator(settings.NumSecretParam);
-                z = OM.RandomGenerator(settings.NumSecretParam);
+                //x = OM.RandomGenerator(settings.NumSecretParam);
+                //y = OM.RandomGenerator(settings.NumSecretParam);
+                //z = OM.RandomGenerator(settings.NumSecretParam);
                 res = 0;
+
+                random = new Random(DateTime.Now.Millisecond);
+
+                for (int w = 0; w < settings.NumSecretParam; ++w)
+                {
+                    random = new Random(DateTime.Now.Millisecond + w);
+                    x[w] = random.Next(0, 2);
+                }
+
+                for (int wq = 0; wq < settings.NumSecretParam; ++wq)
+                {
+                    random = new Random(DateTime.Now.Millisecond + wq);
+                    y[wq] = random.Next(0, 2);
+                }
+
+                for (int wqq = 0; wqq < settings.NumSecretParam; ++wqq)
+                {
+                    random = new Random(DateTime.Now.Millisecond + wqq);
+                    z[wqq] = random.Next(0, 2);
+                }
 
                 for (int j = 0; j < settings.NumSecretParam; j++)
                 {
-                    xy[j] = x[j] ^ y[j];
-                    xz[j] = x[j] ^ z[j];
-                    yz[j] = z[j] ^ y[j];
+                    xy[j]  = x[j] ^ y[j];
+                    xz[j]  = x[j] ^ z[j];
+                    yz[j]  = y[j] ^ z[j];
                     xyz[j] = x[j] ^ y[j] ^ z[j];
                 }
 
                 //Fix the public inputs not in the set of cube I to zero and for other
                 //we put in all state(i.e in 2^(cube.size))
-                for (ulong k = 0; k < cardinalDegree; k++)
+                for (ulong k = 0; k < cardinalDegree; ++k)
                 {
-                    for (int b = 0; b < maxterm.Count; b++)
+                    for (int b = 0; b < maxterm.Count; ++b)
                         v[maxterm[b]] = (k & ((ulong)1 << b)) > 0 ? 1 : 0;
                     res ^= BlackBox(v, x) ^ BlackBox(v, y) ^ BlackBox(v, z) ^ BlackBox(v, xy)
                          ^ BlackBox(v, xz) ^ BlackBox(v, yz) ^ BlackBox(v, xyz)
@@ -337,7 +361,6 @@ namespace NCubeAttack
                 }
 
                 if (res == 1) return false;
-                if (res == 0) return true;
             }
             return true;
         }
@@ -475,6 +498,7 @@ namespace NCubeAttack
             ListOfTerm.Add(new List<int>());
             ListOfTerm.Add(new List<int>());
             int[] secVarElement = new int[settings.NumSecretParam];
+            int[] nul = new int[settings.NumSecretParam];
             int res = 0;
 
             // for K -- 1-demension (amount = binom_coeff(1,SVI.Count()))
@@ -1083,14 +1107,14 @@ namespace NCubeAttack
             //listCubeIndexesTest.Add(new List<int> { 31, 12 });
             //listCubeIndexesTest.Add(new List<int> { 31, 13 });
 
-             listCubeIndexesTest.Add(new List<int> {  29,28,24,22,21});
-            //listCubeIndexesTest.Add(new List<int> { 31,30,22 });
-            //listCubeIndexesTest.Add(new List<int> { 31,30,21 });
-            //listCubeIndexesTest.Add(new List<int> { 30, 21,20 });
-            //listCubeIndexesTest.Add(new List<int> { 30,25,19});
-            //listCubeIndexesTest.Add(new List<int> { 30,25,17 });
-            //listCubeIndexesTest.Add(new List<int> { 24,9,7 });
-            //listCubeIndexesTest.Add(new List<int> { 21,7,5 });
+            listCubeIndexesTest.Add(new List<int> { 25, 27});
+            listCubeIndexesTest.Add(new List<int> { 25,30 });
+            listCubeIndexesTest.Add(new List<int> { 23, 28, 29, 30 });
+            //listCubeIndexesTest.Add(new List<int> { 30, 21, 20 });
+            //listCubeIndexesTest.Add(new List<int> { 30, 25, 19 });
+            //listCubeIndexesTest.Add(new List<int> { 30, 25, 17 });
+            //listCubeIndexesTest.Add(new List<int> { 24, 9, 7 });
+            //listCubeIndexesTest.Add(new List<int> { 21, 7, 5 });
 
             // Present 1 round 3 bit, 18 vector
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 3, 1 });
@@ -1115,7 +1139,6 @@ namespace NCubeAttack
 
             for (int i = 0; i < listCubeIndexesTest.Count(); i++)
             {
-
                 for (ulong j = 0; j < Math.Pow(2, listCubeIndexesTest[i].Count()); j++)
                 {
                     for (int g = 0; g < settings.NumPublicVar; g++)

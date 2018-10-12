@@ -8,7 +8,7 @@
         public int NumLinearTest      = 100;
         public int NumQuadraticTest   = 100;
         public int NumConstTest       = 100;
-        public int NumOfRandomSample  = 500;
+        public int NumOfRandomSample  = 300;
         public int NumSecretParam     = 0;   // number of secret param(lenght of key in the cipher implemention)
         public int NumPublicVar       = 0;
 
@@ -23,17 +23,17 @@
 
 
         private int[] SpeckKey2 = {
-            1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1,  // 15
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 15
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 31
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 37 
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1   // 63
         };
          
         private int[] SpeckKey3 = {
-            0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1
         };
 
         private int[] PresentKey = {
@@ -175,7 +175,7 @@
 
             if (CCubeAttack.BlackBoxID == 2)    // Speck
             {
-                return SpeckKey3;
+                return SpeckKey2;
             }
 
             if (CCubeAttack.BlackBoxID == 3)    // Led

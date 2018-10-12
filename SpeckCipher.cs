@@ -1,6 +1,6 @@
 ﻿public class SpeckCipher : ICipher 
 {
-    public static int ROUNDS = 2;
+    public static int ROUNDS = 3;
 
     public static int RotateRight16(ushort Value, byte Count)
     {

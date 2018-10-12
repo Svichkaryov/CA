@@ -7,6 +7,6 @@
 
     public class Path
     {
-        public const string PathToTheFolderResult = @"C:\Users\Vanya\Documents\Visual Studio 2015\Projects\Cube Attack\Cube Attack\result\";
+        public const string PathToTheFolderResult = @"E:\VS_VC_Proj\MA\CA\result\";
     }
 }
