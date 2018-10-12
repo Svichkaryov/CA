@@ -5,14 +5,14 @@
         public enum CubeAttackMode { preprocessing, online, setPublicBits };
         public enum CipherName { test, present, speck32_64, led, idea, midori, piccolo80 }
 
-        public int NumLinearTest      = 50;
-        public int NumQuadraticTest   = 50;
-        public int NumConstTest       = 50;
+        public int NumLinearTest      = 100;
+        public int NumQuadraticTest   = 100;
+        public int NumConstTest       = 100;
         public int NumOfRandomSample  = 500;
         public int NumSecretParam     = 0;   // number of secret param(lenght of key in the cipher implemention)
         public int NumPublicVar       = 0;
 
-        private int[] Testkey  = { 1, 0, 1 };
+        private int[] Testkey  = { 1, 1, 1 };
 
         private int[] SpeckKey = {
             1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0,

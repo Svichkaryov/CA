@@ -41,7 +41,8 @@ namespace NCubeAttack
         static private int TestFunc(int[] v, int[] x)
         {
             return (v[0] & v[1] & x[0]) ^ (v[0] & v[1] & x[2]) ^ (v[1] & x[2]) ^ (v[1] & x[1]) ^ v[0] & x[0] ^
-                   v[0] & v[1] ^ (v[2] & x[1] & x[0]) ^ v[1] ^ x[1] ^ 1;
+                   v[0] & v[1] ^ (v[2] & v[1] & x[1] & x[0]) ^ (v[2] & v[1] & x[0] & x[2]) ^
+                   (v[2] & v[1]) ^ v[1] ^ x[1] ^ 1;
         }
 
         public CCubeAttack(CubeAttackSettings.CipherName cipher)
@@ -144,7 +145,7 @@ namespace NCubeAttack
                     keySpeck = OM.ConvertFromBoolVectorToByteArray(x, 16);
                     plaintext = OM.ConvertFromBoolVectorToByteArray(v, 16);
                     SpeckCipher.speck_block(plaintext, keySpeck, ciphertext);
-                    return OM.GetIBit(OM.BitCount(ciphertext[0]) + OM.BitCount(ciphertext[1]), 3);
+                    return OM.GetIBit(OM.BitCount(ciphertext[0]) + OM.BitCount(ciphertext[1]), 2);
                      
                 case 3: // Led
                     int[] p = new int[8];
@@ -303,7 +304,8 @@ namespace NCubeAttack
             int[] z = new int[settings.NumSecretParam];
             int[] xy = new int[settings.NumSecretParam];
             int[] xz = new int[settings.NumSecretParam];
-            int[] zy = new int[settings.NumSecretParam];
+            int[] yz = new int[settings.NumSecretParam];
+            int[] xyz = new int[settings.NumSecretParam];
             int[] secVarElement = new int[settings.NumSecretParam];
             int res = 0;
             ulong cardinalDegree = (ulong)Math.Pow(2, maxterm.Count);
@@ -319,7 +321,8 @@ namespace NCubeAttack
                 {
                     xy[j] = x[j] ^ y[j];
                     xz[j] = x[j] ^ z[j];
-                    zy[j] = z[j] ^ y[j];
+                    yz[j] = z[j] ^ y[j];
+                    xyz[j] = x[j] ^ y[j] ^ z[j];
                 }
 
                 //Fix the public inputs not in the set of cube I to zero and for other
@@ -329,7 +332,8 @@ namespace NCubeAttack
                     for (int b = 0; b < maxterm.Count; b++)
                         v[maxterm[b]] = (k & ((ulong)1 << b)) > 0 ? 1 : 0;
                     res ^= BlackBox(v, x) ^ BlackBox(v, y) ^ BlackBox(v, z) ^ BlackBox(v, xy)
-                         ^ BlackBox(v, xz) ^ BlackBox(v, zy) ^ BlackBox(v, (int[])secVarElement.Clone());
+                         ^ BlackBox(v, xz) ^ BlackBox(v, yz) ^ BlackBox(v, xyz)
+                         ^ BlackBox(v, (int[])secVarElement.Clone());
                 }
 
                 if (res == 1) return false;
@@ -578,10 +582,10 @@ namespace NCubeAttack
         {
             List<string> sp = new List<string>();
 
-            for (int i = 0; i < superpoly2[0].Count(); i++)
+            for (int i = 0; i < superpoly2[0].Count(); ++i)
             {
-                if (superpoly2[0][i] != 0 & superpoly2[1][i] == 0) sp.Add(i == superpoly2[0].Count()-1 ? "1" : "x" + superpoly2[0][i]);
-                if (superpoly2[1][i] != 0) sp.Add(i == superpoly2[0].Count()-1 ? "1" : "x" + superpoly2[0][i] + "*x" + superpoly2[1][i]);
+                if (superpoly2[0][i] != 0 & superpoly2[1][i] == 0) sp.Add(i != superpoly2[0].Count()-1 ? "x" + superpoly2[0][i] : "1");
+                if (superpoly2[1][i] != 0) sp.Add("x" + superpoly2[0][i] + "*x" + superpoly2[1][i]);
             }
             return (sp.Count == 0) ? "0" : string.Join("+", sp);
         }
@@ -1039,6 +1043,7 @@ namespace NCubeAttack
                 superpoly2 = new List<List<int>>();
                 if (QuadraticTest(new int[settings.NumPublicVar], cube))
                 {
+                    Console.WriteLine("quadratic\n");
                     superpoly2 = ComputeSuperpoly2(new int[settings.NumPublicVar], SecretVariableIndexes(new int[settings.NumPublicVar], cube), cube);
 
                     if (superpoly2[1].Sum() != 0)
