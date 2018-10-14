@@ -144,6 +144,17 @@ namespace Operation
             return bitC;
         }
 
+        public static int BitCount(ushort key)
+        {
+            int bitC = 0;
+
+            for (int i = 0; i < BigInteger.Log(key, 2) + 1; i++)
+            {
+                if (((key >> i) & 1) == 1) { bitC++; };
+            }
+            return bitC;
+        }
+
         public static int BitCount(int key, int nByte)
         {
             int bitC = 0;

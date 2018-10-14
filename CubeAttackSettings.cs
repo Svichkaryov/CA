@@ -6,7 +6,7 @@
         public enum CipherName { test, present, speck32_64, led, idea, midori, piccolo80 }
 
         public int NumLinearTest      = 100;
-        public int NumQuadraticTest   = 100;
+        public int NumQuadraticTest   = 1000;
         public int NumConstTest       = 100;
         public int NumOfRandomSample  = 300;
         public int NumSecretParam     = 0;   // number of secret param(lenght of key in the cipher implemention)
@@ -23,7 +23,7 @@
 
 
         private int[] SpeckKey2 = {
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 15
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 15
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 31
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 37 
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1   // 63
