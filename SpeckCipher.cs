@@ -1,6 +1,6 @@
 ﻿public class SpeckCipher : ICipher 
 {
-    public static int ROUNDS = 2;
+    public static int ROUNDS = 3;
 
     public static int RotateRight16(ushort Value, byte Count)
     {
@@ -14,10 +14,10 @@
 
     public static void speck_round(ref ushort x, ref ushort y, ushort k)
     {
-        x = (ushort)((RotateRight16(x, 0)) | (RotateLeft16(x,(16)))); // x = ROTR(x, 7)
+        x = (ushort)((RotateRight16(x, 7)) | (RotateLeft16(x,(16-7)))); // x = ROTR(x, 7)
         x += y;
         x ^= k;
-        y = (ushort)((RotateLeft16(y, 0)) | (RotateRight16(y,(16)))); // y = ROTL(y, 2)
+        y = (ushort)((RotateLeft16(y, 2)) | (RotateRight16(y,(16-2)))); // y = ROTL(y, 2)
         y ^= x;
     }
 

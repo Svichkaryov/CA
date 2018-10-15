@@ -136,7 +136,7 @@ namespace NCubeAttack
                 case 1: // Present
                     BigInteger key = OM.GetBigIntFromIndexArrayFromMSB(x);
                     Present A = new Present(key);
-                    return OM.GetIBit(OM.BitCount(A.Encrypt(OM.GetBigIntFromIndexArrayFromMSB(v))), 1);
+                    return OM.GetIBit(OM.BitCount(A.Encrypt(OM.GetBigIntFromIndexArrayFromMSB(v))), 0);
 
                 case 2: // Speck
                     ushort[] keySpeck = new ushort[4] { 0, 0, 0, 0 };
@@ -256,35 +256,53 @@ namespace NCubeAttack
             return true;
         }
 
-        static public bool LinearityTest2(int[] v, List<int> maxterm, List<int> I)
+        static public bool LinearityTest2(int[] v, List<int> maxterm)
         {
+            int[] x = new int[settings.NumSecretParam];
             int[] z = new int[settings.NumSecretParam];
             int[] y = new int[settings.NumSecretParam];
-            int[] secVarElement = new int[settings.NumSecretParam];
+            int[] nul = new int[settings.NumSecretParam];
             int res = 0;
             ulong cardinalDegree = (ulong)Math.Pow(2, maxterm.Count);
 
             var S = new List<int>();
-            if (I.Count() == 0) return false;
-            for(int j=1;j<I.Count();j++)
+
+            for (int i = 0; i < settings.NumSecretParam; ++i)
             {
-                if (I[j] == 1)
-                    S.Add(j-1);
+                x[i] = 1;
+                for (ulong k = 0; k < cardinalDegree; k++)
+                {
+                    for (int b = 0; b < maxterm.Count; b++)
+                        v[maxterm[b]] = (k & ((ulong)1 << b)) > 0 ? 1 : 0;
+                    res ^= BlackBox(v, x) ^ BlackBox(v, nul);
+                }
+                x[i] = 0;
+                if (res == 1)
+                {
+                    S.Add(i);
+                }
+                res = 0;
             }
 
-            foreach(var j in S)
+            Encoding enc = Encoding.GetEncoding(1251);
+            Random random = new Random(DateTime.Now.Millisecond);
+            
+            foreach (var j in S)
             {
                 for (int i = 0; i < settings.NumLinearTest; i++)
                 {
-                    y = OM.RandomGenerator(settings.NumSecretParam);
-                    z = y;
                     res = 0;
+
+                    for (int w = 0; w < settings.NumSecretParam; w++)
+                    {
+                        random = new Random(DateTime.Now.Millisecond + w);
+                        y[w] = random.Next(0, 2);
+                        z[w] = y[w];
+                    }
 
                     y[j] = 0;
                     z[j] = 1;
 
-                     //Fix the public inputs not in the set of cube I to zero and for other
-                    //we put in all state(i.e in 2^(cube.size))
                     for (ulong k = 0; k < cardinalDegree; k++)
                     {
                         for (int b = 0; b < maxterm.Count; b++)
@@ -294,8 +312,8 @@ namespace NCubeAttack
 
                     if (res == 0) return false;
                 }
-                
             }
+
             return true;
         }
 
@@ -1059,18 +1077,22 @@ namespace NCubeAttack
 
                 var superpoly = new List<int>();
                 var superpoly2 = new List<List<int>>();
-                
+
+                if (LinearityTest2(new int[settings.NumPublicVar], cube))
+                {
+                    Console.WriteLine("Lin");
+                    superpoly = ComputeSuperpoly(new int[settings.NumPublicVar], cube);
+
+                    if ((!(superpoly.SequenceEqual(nulSeq))))
+                    {
+                        Console.WriteLine(GetLogMessage1(cube, superpoly));
+                    }
+                }
+
+
                 if (QuadraticTest(new int[settings.NumPublicVar], cube))
                 {
-                    if (LinearityTest(new int[settings.NumPublicVar], cube))
-                    {
-                        superpoly = ComputeSuperpoly(new int[settings.NumPublicVar], cube);
-
-                        if ((!(superpoly.SequenceEqual(nulSeq))))
-                        {
-                            Console.WriteLine(GetLogMessage1(cube, superpoly));
-                        }
-                    }
+                    Console.WriteLine("quadra");
 
                     superpoly2 = ComputeSuperpoly2(new int[settings.NumPublicVar], SecretVariableIndexes(new int[settings.NumPublicVar], cube), cube);
                     if (superpoly2[1].Sum() != 0)
@@ -1091,25 +1113,7 @@ namespace NCubeAttack
             listCubeIndexesTest = new List<List<int>>();
             // var superpolyMatrixWithoutConst = new Matrix.Matrix(NumSecretParam, NumSecretParam);
             int[] pub = new int[settings.NumPublicVar];
-
-            // speck 1 round, hw(state) - 2st bit, coutt -16
-            //listCubeIndexesTest.Add(new List<int> { 31, 14 });
-            //listCubeIndexesTest.Add(new List<int> { 22, 15 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 0 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 1 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 2 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 3 });
-            //listCubeIndexesTest.Add(new List<int> { 22, 4 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 5 });
-            //listCubeIndexesTest.Add(new List<int> { 26, 6 });
-            //listCubeIndexesTest.Add(new List<int> { 29, 7 });
-            //listCubeIndexesTest.Add(new List<int> { 30, 8 });
-            //listCubeIndexesTest.Add(new List<int> { 29, 9 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 10 });
-            //listCubeIndexesTest.Add(new List<int> { 30, 11 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 12 });
-            //listCubeIndexesTest.Add(new List<int> { 31, 13 });
-
+            
             listCubeIndexesTest.Add(new List<int> { 0});
             listCubeIndexesTest.Add(new List<int> { 1 });
             listCubeIndexesTest.Add(new List<int> { 2 });
@@ -1142,12 +1146,7 @@ namespace NCubeAttack
             listCubeIndexesTest.Add(new List<int> { 29 });
             listCubeIndexesTest.Add(new List<int> { 30 });
             listCubeIndexesTest.Add(new List<int> { 31 });
-            //listCubeIndexesTest.Add(new List<int> { 30, 21, 20 });
-            //listCubeIndexesTest.Add(new List<int> { 30, 25, 19 });
-            //listCubeIndexesTest.Add(new List<int> { 30, 25, 17 });
-            //listCubeIndexesTest.Add(new List<int> { 24, 9, 7 });
-            //listCubeIndexesTest.Add(new List<int> { 21, 7, 5 });
-
+            
             // Present 1 round 3 bit, 18 vector
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 3, 1 });
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 2, 0 });
@@ -1167,7 +1166,6 @@ namespace NCubeAttack
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 43, 41 });
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 42, 40 });
             //listCubeIndexesTest.Add(new List<int> { 62, 61, 60, 59, 58, 56, 46, 44 });
-
 
             for (int i = 0; i < listCubeIndexesTest.Count(); i++)
             {
@@ -1189,7 +1187,6 @@ namespace NCubeAttack
 
             for (int s = 0; s < listCubeIndexesTest.Count(); s++)
             {
-                Console.WriteLine("s: ");
                 if (LinearityTest(new int[settings.NumPublicVar], listCubeIndexesTest[s]))
                 {
                     superpoly = ComputeSuperpoly(new int[settings.NumPublicVar], listCubeIndexesTest[s]);
@@ -1197,7 +1194,6 @@ namespace NCubeAttack
                 }
                 if (QuadraticTest(new int[settings.NumPublicVar], listCubeIndexesTest[s]))
                 {
-                    //var a = SecretVariableIndexes(new int[settings.NumPublicVar], listCubeIndexesTest[s]);
                     superpoly2 = ComputeSuperpoly2(new int[settings.NumPublicVar], SecretVariableIndexes(new int[settings.NumPublicVar], listCubeIndexesTest[s]), listCubeIndexesTest[s]);
                     Console.WriteLine(GetLogMessage2(listCubeIndexesTest[s], superpoly2, outpu[s]));
                 }
